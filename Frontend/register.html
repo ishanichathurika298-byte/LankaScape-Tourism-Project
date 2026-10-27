@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - LankaScape</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="auth-body">
+
+    <div class="auth-left">
+        <div class="auth-header" style="margin-bottom: 25px;">
+            <a href="index.html">
+                <img src="logo-white.png" alt="LankaScape Logo" style="height: 48px; width: auto; object-fit: contain;">
+            </a>
+        </div>
+        <div class="auth-form-container">
+            <h2>Create account</h2>
+            <p>Start planning your Sri Lankan adventure today.</p>
+
+            <form id="registerForm">
+                <div class="auth-input-group">
+                    <label for="fullName">Full Name</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" id="fullName" placeholder="John Doe" required>
+                    </div>
+                </div>
+
+                <div class="auth-input-group">
+                    <label for="email">Email</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" id="email" placeholder="name@example.com" required>
+                    </div>
+                </div>
+
+                <div class="auth-input-group">
+                    <label for="password">Password</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth">Sign up</button>
+            </form>
+
+            <div class="auth-divider">
+                <span>Or sign up with</span>
+            </div>
+
+            <div class="social-btns">
+                <button class="btn-social">
+                    <i class="fa-brands fa-google" style="color: #ea4335;"></i> Google
+                </button>
+                <button class="btn-social">
+                    <i class="fa-brands fa-facebook" style="color: #1877f2;"></i> Facebook
+                </button>
+            </div>
+
+            <div class="auth-footer-link">
+                Already have an account? <a href="login.html">Sign in here</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-right" style="background-image: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.2)), url('https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=1200');">
+        <span style="font-size: 14px; margin-bottom: 20px; display: inline-flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-leaf"></i> Discover authentic beauty
+        </span>
+        <h1>"Sri Lanka is a universe inside a teardrop."</h1>
+        <p>Join the community and explore breathtaking landscapes safely.</p>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('http://localhost:8080/api/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullName: fullName,
+                    email: email,
+                    password: password
+                })
+            })
+            .then(async response => {
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registration Successful!',
+                        text: 'You can now login with your details.',
+                        timer: 2500,
+                        background: '#1e293b',
+                        color: '#fff',
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "login.html";
+                    });
+                } else {
+                    const msg = await response.text();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registration Failed',
+                        text: msg,
+                        background: '#1e293b',
+                        color: '#fff'
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+</body>
+</html>

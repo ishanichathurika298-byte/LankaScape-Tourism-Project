@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LankaScape - Travel Guide & E-Ticketing</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo-white.png" alt="LankaScape Logo" class="nav-logo">
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#destinations">Destinations</a></li>
+            <li><a href="#categories">Categories</a></li>
+            <li><a href="#seasons">Seasons</a></li>
+            <li><a href="login.html" class="btn-login">Login / Register</a></li>
+        </ul>
+    </nav>
+
+    <!-- Modern Hero Carousel Section -->
+    <section class="hero-slider-container">
+        <!-- Slides Layer -->
+        <div class="hero-slides">
+            <!-- Slide 1: Sigiriya (User's preferred Sigiriya image) -->
+            <div class="hero-slide active" data-slide="0">
+                <div class="slide-bg" style="background-image: url('Gemini_Generated_Image_bj9v1kbj9v1kbj9v.jpg');"></div>
+                <div class="slide-overlay"></div>
+                <div class="hero-content">
+                    <div class="slide-tag"><span class="tag-dot"></span>THE WONDER OF ASIA</div>
+                    <h1>Discover the Wonder<br>of Asia</h1>
+                    <p>Ancient kingdoms, golden beaches, and misty highlands — Sri Lanka awaits.</p>
+                    <div class="slide-btns">
+                        <a href="#destinations" class="btn-hero-primary">Plan Your Journey <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="#categories" class="btn-hero-secondary">Explore Sri Lanka</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Buddhist Heritage (Temple / Dalada Maligawa) -->
+            <div class="hero-slide" data-slide="1">
+                <div class="slide-bg" style="background-image: url('Gemini_Generated_Image_uva5fuuva5fuuva5.jpg');"></div>
+                <div class="slide-overlay"></div>
+                <div class="hero-content">
+                    <div class="slide-tag"><span class="tag-dot"></span>THE WONDER OF ASIA</div>
+                    <h1>A Living Buddhist<br>Heritage</h1>
+                    <p>Walk through 2,500 years of spiritual history at ancient temples and sacred dagobas.</p>
+                    <div class="slide-btns">
+                        <a href="#destinations" class="btn-hero-primary">Explore Heritage <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="#categories" class="btn-hero-secondary">Explore Sri Lanka</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Beaches & Turquoise Waters -->
+            <div class="hero-slide" data-slide="2">
+                <div class="slide-bg" style="background-image: url('Gemini_Generated_Image_418dse418dse418d.jpg');"></div>
+                <div class="slide-overlay"></div>
+                <div class="hero-content">
+                    <div class="slide-tag"><span class="tag-dot"></span>THE WONDER OF ASIA</div>
+                    <h1>Sun-Kissed Shores &<br>Turquoise Waters</h1>
+                    <p>From the golden sands of Unawatuna to the world-class surf breaks of Arugam Bay.</p>
+                    <div class="slide-btns">
+                        <a href="#destinations" class="btn-hero-primary">Find Your Beach <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="#categories" class="btn-hero-secondary">Explore Sri Lanka</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Scenic Rail Journey (Ella Nine Arches Bridge) -->
+            <div class="hero-slide" data-slide="3">
+                <div class="slide-bg" style="background-image: url('Gemini_Generated_Image_hw37c2hw37c2hw37.jpg');"></div>
+                <div class="slide-overlay"></div>
+                <div class="hero-content">
+                    <div class="slide-tag"><span class="tag-dot"></span>THE WONDER OF ASIA</div>
+                    <h1>The World's Most<br>Scenic Rail Journey</h1>
+                    <p>Wind through emerald tea plantations and mist on the iconic Kandy to Ella train.</p>
+                    <div class="slide-btns">
+                        <a href="#destinations" class="btn-hero-primary">Explore Hill Country <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="#categories" class="btn-hero-secondary">Explore Sri Lanka</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Untamed Wildlife & Safari -->
+            <div class="hero-slide" data-slide="4">
+                <div class="slide-bg" style="background-image: url('Gemini_Generated_Image_5gnfx05gnfx05gnf.jpg');"></div>
+                <div class="slide-overlay"></div>
+                <div class="hero-content">
+                    <div class="slide-tag"><span class="tag-dot"></span>THE WONDER OF ASIA</div>
+                    <h1>Untamed Wildlife &<br>Safari Adventures</h1>
+                    <p>Encounter wild leopards, ocean giants, and Asian elephant herds in world-class national parks.</p>
+                    <div class="slide-btns">
+                        <a href="#destinations" class="btn-hero-primary">Explore Wildlife <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="#categories" class="btn-hero-secondary">Explore Sri Lanka</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carousel Indicators (Pills / Dots) -->
+        <div class="hero-indicators">
+            <span class="indicator-bar active" onclick="goToSlide(0)" title="Discover Sri Lanka"></span>
+            <span class="indicator-bar" onclick="goToSlide(1)" title="Buddhist Heritage"></span>
+            <span class="indicator-bar" onclick="goToSlide(2)" title="Sun-Kissed Shores"></span>
+            <span class="indicator-bar" onclick="goToSlide(3)" title="Scenic Rail Journey"></span>
+            <span class="indicator-bar" onclick="goToSlide(4)" title="Untamed Wildlife"></span>
+        </div>
+
+        <!-- Floating Glassmorphism Widgets Bar (Location, Time, Date, Weather) -->
+        <div class="hero-widgets-bar">
+            <div class="widget-item">
+                <i class="fa-solid fa-location-dot widget-icon"></i>
+                <div class="widget-info">
+                    <span class="widget-label">LOCATION</span>
+                    <strong class="widget-val">Colombo, Sri Lanka</strong>
+                </div>
+            </div>
+            <div class="widget-divider"></div>
+            <div class="widget-item">
+                <i class="fa-regular fa-clock widget-icon"></i>
+                <div class="widget-info">
+                    <span class="widget-label">LOCAL TIME</span>
+                    <strong class="widget-val" id="hero-local-time">--:--:-- --</strong>
+                </div>
+            </div>
+            <div class="widget-divider"></div>
+            <div class="widget-item">
+                <i class="fa-regular fa-calendar widget-icon"></i>
+                <div class="widget-info">
+                    <span class="widget-label">DATE</span>
+                    <strong class="widget-val" id="hero-local-date">--</strong>
+                </div>
+            </div>
+            <div class="widget-divider"></div>
+            <div class="widget-item">
+                <i class="fa-solid fa-cloud-sun widget-icon"></i>
+                <div class="widget-info">
+                    <span class="widget-label">WEATHER</span>
+                    <strong class="widget-val"><span id="hero-weather">28°C</span> LIGHT BREEZE</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Discover Sri Lanka Regions Section (Piyoway Style) -->
+    <section id="categories" class="categories-section">
+        <div class="section-header-modern">
+            <div>
+                <span class="section-tag-amber">DESTINATIONS</span>
+                <h2>Discover Sri Lanka</h2>
+                <p>From sun-drenched southern beaches to misty highland tea country — explore the island's diverse regions.</p>
+            </div>
+            <a href="#destinations" class="view-all-link">View all destinations <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="category-grid">
+            <!-- 1. Southern Coast -->
+            <div class="cat-card" style="background-image: url('images/Gemini_Generated_Image_vij1bvij1bvij1bv.jpg');" onclick="filterFromRegion('BEACH')">
+                <div class="cat-pill"><i class="fa-solid fa-location-dot"></i> 5 PLACES</div>
+                <div class="cat-overlay">
+                    <h3>Southern Coast</h3>
+                    <p>Galle • Mirissa • Unawatuna • Weligama • Hikkaduwa</p>
+                </div>
+            </div>
+
+            <!-- 2. Cultural Triangle -->
+            <div class="cat-card" style="background-image: url('Gemini_Generated_Image_uva5fuuva5fuuva5.jpg');" onclick="filterFromRegion('HERITAGE')">
+                <div class="cat-pill"><i class="fa-solid fa-location-dot"></i> 4 PLACES</div>
+                <div class="cat-overlay">
+                    <h3>Cultural Triangle</h3>
+                    <p>Sigiriya • Dambulla • Polonnaruwa • Anuradhapura</p>
+                </div>
+            </div>
+
+            <!-- 3. Hill Country -->
+            <div class="cat-card" style="background-image: url('Gemini_Generated_Image_hw37c2hw37c2hw37.jpg');" onclick="filterFromRegion('HILL COUNTRY')">
+                <div class="cat-pill"><i class="fa-solid fa-location-dot"></i> 3 PLACES</div>
+                <div class="cat-overlay">
+                    <h3>Hill Country</h3>
+                    <p>Kandy • Nuwara Eliya • Ella</p>
+                </div>
+            </div>
+
+            <!-- 4. East Coast -->
+            <div class="cat-card" style="background-image: url('images/Gemini_Generated_Image_bmq46ybmq46ybmq4.jpg');" onclick="filterFromRegion('BEACH')">
+                <div class="cat-pill"><i class="fa-solid fa-location-dot"></i> 3 PLACES</div>
+                <div class="cat-overlay">
+                    <h3>East Coast</h3>
+                    <p>Trincomalee • Arugam Bay • Pasikudah</p>
+                </div>
+            </div>
+
+            <!-- 5. Wild Safari -->
+            <div class="cat-card" style="background-image: url('Gemini_Generated_Image_5gnfx05gnfx05gnf.jpg');" onclick="filterFromRegion('WILDLIFE')">
+                <div class="cat-pill"><i class="fa-solid fa-location-dot"></i> 3 PLACES</div>
+                <div class="cat-overlay">
+                    <h3>Wild Safari</h3>
+                    <p>Yala • Wilpattu • Udawalawe</p>
+                </div>
+            </div>
+
+            <!-- 6. Colombo & Beyond -->
+            <div class="cat-card" style="background-image: url('images/Gemini_Generated_Image_ayq0ttayq0ttayq0.jpg');" onclick="filterFromRegion('ALL')">
+                <div class="cat-pill"><i class="fa-solid fa-location-dot"></i> 2 PLACES</div>
+                <div class="cat-overlay">
+                    <h3>Colombo & Beyond</h3>
+                    <p>Colombo • Negombo • Mount Lavinia</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Destinations Section (Dynamic from Database in A-Z Order - Piyoway Style) -->
+    <section id="destinations" class="destinations-section">
+        <div class="section-header-modern">
+            <div>
+                <span class="section-tag-amber">EXPERIENCES & TICKETS</span>
+                <h2>Explore Sri Lanka</h2>
+                <p>Browse 60 famous destinations across Sri Lanka, or filter by your favorite vibe.</p>
+            </div>
+            <a href="my-bookings.html" class="view-all-link">Manage My Bookings <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <!-- Piyoway-Style Controls Bar: Search, Category Pills & Sort -->
+        <div class="explore-controls-wrapper">
+            <div class="explore-top-bar">
+                <div class="explore-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="destSearchInput" placeholder="Search destinations (e.g., Sigiriya, Galle, Mirissa, Beach, Safari)..." oninput="applyDestFilters()">
+                    <button class="clear-search-btn" id="clearSearchBtn" onclick="clearDestSearch()" title="Clear search" style="display: none;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="explore-sort-box">
+                    <label for="destSortSelect"><i class="fa-solid fa-arrow-down-a-z"></i> Sort By:</label>
+                    <select id="destSortSelect" onchange="applyDestFilters()">
+                        <option value="name-asc" selected>Alphabetical (A - Z)</option>
+                        <option value="name-desc">Alphabetical (Z - A)</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="rating-desc">Highest Rated</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Category Filter Pills (Piyoway style) -->
+            <div class="explore-category-pills">
+                <button class="cat-filter-btn active" data-category="ALL" onclick="setDestCategory('ALL', this)">
+                    <i class="fa-solid fa-globe"></i> All
+                </button>
+                <button class="cat-filter-btn" data-category="BEACH" onclick="setDestCategory('BEACH', this)">
+                    <i class="fa-solid fa-umbrella-beach"></i> Beaches & Coast
+                </button>
+                <button class="cat-filter-btn" data-category="HERITAGE" onclick="setDestCategory('HERITAGE', this)">
+                    <i class="fa-solid fa-monument"></i> Heritage & Culture
+                </button>
+                <button class="cat-filter-btn" data-category="HILL COUNTRY" onclick="setDestCategory('HILL COUNTRY', this)">
+                    <i class="fa-solid fa-mountain"></i> Hill Country
+                </button>
+                <button class="cat-filter-btn" data-category="WILDLIFE" onclick="setDestCategory('WILDLIFE', this)">
+                    <i class="fa-solid fa-paw"></i> Wildlife & Safari
+                </button>
+                <button class="cat-filter-btn" data-category="NATURE" onclick="setDestCategory('NATURE', this)">
+                    <i class="fa-solid fa-leaf"></i> Nature & Rainforests
+                </button>
+            </div>
+
+            <div class="explore-status-bar">
+                <span id="destCountBadge"><i class="fa-solid fa-check"></i> Showing 60 destinations in A to Z order</span>
+            </div>
+        </div>
+
+        <div id="destinations-container" class="destinations-grid">
+            <p>Loading destinations from database...</p>
+        </div>
+    </section>
+
+    <!-- Seasonal Highlights -->
+    <section id="seasons" class="seasons-section">
+        <div class="section-header-modern">
+            <div>
+                <span class="section-tag-amber">BEST TIME TO TRAVEL</span>
+                <h2>Seasonal Highlights</h2>
+                <p>Plan your visit around Sri Lanka's unique monsoon cycles and wildlife gatherings.</p>
+            </div>
+        </div>
+        <div class="seasons-grid">
+            <div class="season-card">
+                <i class="fa-solid fa-umbrella-beach"></i>
+                <h3>South Coast Beach Season</h3>
+                <p>The golden period for sun-seekers, calm turquoise waters, and world-class surfing.</p>
+                <span class="season-time">Dec - April</span>
+            </div>
+            <div class="season-card">
+                <i class="fa-solid fa-water"></i>
+                <h3>Whale Watching in Mirissa</h3>
+                <p>Encounter majestic Blue Whales and playful dolphins in their natural tropical habitat.</p>
+                <span class="season-time">Nov - April</span>
+            </div>
+            <div class="season-card">
+                <i class="fa-solid fa-monument"></i>
+                <h3>Cultural Triangle Dry Season</h3>
+                <p>Perfect sunny weather for exploring ancient ruins, caves, and world-heritage rock fortresses.</p>
+                <span class="season-time">May - Sep</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+        <div class="footer-content">
+            <!-- Brand & Company Overview -->
+            <div class="footer-col">
+                <div class="footer-logo-container">
+                    <img src="logo-white.png" alt="LankaScape Logo" class="footer-logo">
+                </div>
+                <div class="footer-company-name">LankaScape Inbound Tours & Travel (Pvt) Ltd</div>
+                <p>Your premier SLTDA-licensed inbound travel partner in Sri Lanka. Dedicated private chauffeur transport, certified tour guides, and tailor-made journeys.</p>
+                <div class="footer-social-links">
+                    <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://wa.me/94771234567" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links / Explore -->
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="#destinations"><i class="fa-solid fa-angle-right" style="color: #f59e0b; font-size: 11px; margin-right: 6px;"></i> All Destinations</a></li>
+                    <li><a href="#categories"><i class="fa-solid fa-angle-right" style="color: #f59e0b; font-size: 11px; margin-right: 6px;"></i> Travel Categories</a></li>
+                    <li><a href="my-bookings.html"><i class="fa-solid fa-angle-right" style="color: #f59e0b; font-size: 11px; margin-right: 6px;"></i> My Bookings</a></li>
+                    <li><a href="#destinations"><i class="fa-solid fa-angle-right" style="color: #f59e0b; font-size: 11px; margin-right: 6px;"></i> Colombo Day Tours</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Us & Head Office -->
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <div class="footer-contact-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span><strong>Head Office:</strong> Level 14, World Trade Center, Bank of Ceylon Mw, Colombo 01, Sri Lanka</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <span><strong>General Line:</strong> <a href="tel:+94112345678">+94 11 234 5678</a></span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <span><strong>24/7 Hotline:</strong> <a href="https://wa.me/94771234567" target="_blank">+94 77 123 4567</a></span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span><strong>Email:</strong> <a href="mailto:info@lankascape.lk">info@lankascape.lk</a></span>
+                </div>
+            </div>
+
+            <!-- Legal & Certification -->
+            <div class="footer-col">
+                <h4>Legal & Info</h4>
+                <ul>
+                    <li style="color: #10b981; font-weight: 700; font-size: 12.5px; margin-bottom: 12px;">
+                        <i class="fa-solid fa-shield-halved"></i> SLTDA Reg: SLTDA/SQA/PRO/2026/0488
+                    </li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Tourist Safety Guidelines</a></li>
+                    <li><a href="#">Cancellation & Refund Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 LankaScape Inbound Tours & Travel (Pvt) Ltd — The Wonder of Asia. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

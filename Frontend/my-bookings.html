@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - LankaScape</title>
+    <!-- Stylesheets & Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body {
+            background: transparent;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Container */
+        .bookings-wrapper {
+            max-width: 1200px;
+            width: 92%;
+            margin: 40px auto 80px;
+            flex: 1;
+        }
+
+        /* Header & Stats */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .dashboard-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .dashboard-title p {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        .stats-summary {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-card-mini {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: right;
+        }
+
+        .stat-card-mini span {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-card-mini strong {
+            font-size: 20px;
+            color: #38bdf8;
+            font-weight: 700;
+        }
+
+        /* Toolbar: Search, Filter, Sort */
+        .toolbar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 16px 20px;
+            border-radius: 14px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-box {
+            flex: 2;
+            min-width: 250px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            color: #64748b;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 11px 15px 11px 42px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .select-custom {
+            width: 100%;
+            padding: 11px 15px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: #f1f5f9;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .select-custom:focus {
+            border-color: #38bdf8;
+        }
+
+        /* Booking Cards Grid */
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        .booking-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            position: relative;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            border-color: #475569;
+        }
+
+        .booking-card-media {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .booking-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .booking-id-tag {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            color: #94a3b8;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .booking-card-body {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .booking-card-body h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 14px;
+        }
+
+        .booking-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+            font-size: 13.5px;
+            margin-bottom: 10px;
+        }
+
+        .booking-meta-row i {
+            width: 16px;
+            color: #38bdf8;
+            text-align: center;
+        }
+
+        .booking-meta-row strong {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .price-divider {
+            height: 1px;
+            background: #334155;
+            margin: 16px 0 14px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .price-row .label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .price-row .amount {
+            font-size: 22px;
+            font-weight: 800;
+            color: #10b981;
+        }
+
+        /* Action Buttons: View Details, Edit, Cancel */
+        .card-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .btn-action {
+            padding: 9px 8px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-view {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .btn-action-view:hover {
+            background: #0284c7;
+            color: white;
+        }
+
+        .btn-action-edit {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .btn-action-edit:hover {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-action-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .btn-action-delete:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #1e293b;
+            border-radius: 16px;
+            border: 1px dashed #334155;
+        }
+
+        .empty-state i {
+            font-size: 50px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .empty-state p {
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+
+        /* Modal styling helper */
+        .receipt-ticket {
+            background: #0f172a;
+            border: 1px dashed #334155;
+            padding: 20px;
+            border-radius: 12px;
+            color: #f8fafc;
+            text-align: left;
+            margin-top: 15px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="logo-white.png" alt="LankaScape Logo" class="nav-logo">
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#destinations">Destinations</a></li>
+            <li><a href="index.html#categories">Categories</a></li>
+            <li><a href="my-bookings.html" style="color: #27ae60; font-weight: bold;">My Bookings</a></li>
+            <li id="authNavSlot"><a href="login.html" class="btn-login">Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="bookings-wrapper">
+        
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>Manage Your Bookings</h1>
+                <p>View, update, reschedule, or cancel your travel itineraries</p>
+            </div>
+            <div class="stats-summary">
+                <div class="stat-card-mini">
+                    <span>Total Trips</span>
+                    <strong id="statTotalTrips">0</strong>
+                </div>
+                <div class="stat-card-mini">
+                    <span>Total Spent</span>
+                    <strong id="statTotalSpent">Rs. 0</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar: Search, Filter, Sort (Criterion: Read 4 Marks) -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search by destination, hotel, or ref..." oninput="applyFilterAndSort()">
+            </div>
+
+            <div class="filter-group">
+                <select id="filterHotel" class="select-custom" onchange="applyFilterAndSort()">
+                    <option value="ALL">All Accommodations</option>
+                    <option value="WITH_HOTEL">With Hotel Booking</option>
+                    <option value="NO_HOTEL">Tickets Only (No Hotel)</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <select id="filterPayment" class="select-custom" onchange="applyFilterAndSort()">
+                    <option value="ALL">All Payments</option>
+                    <option value="PAID">Paid in Full (Online)</option>
+                    <option value="PENDING">Pay on Arrival (Pending)</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <select id="sortOrder" class="select-custom" onchange="applyFilterAndSort()">
+                    <option value="DATE_DESC">Travel Date: Latest First</option>
+                    <option value="DATE_ASC">Travel Date: Earliest First</option>
+                    <option value="PRICE_DESC">Price: High to Low</option>
+                    <option value="PRICE_ASC">Price: Low to High</option>
+                    <option value="QTY_DESC">Quantity: High to Low</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bookings Grid Container -->
+        <div id="bookingsContainer" class="bookings-grid">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 28px; margin-bottom: 12px;"></i>
+                <p>Loading your bookings from database...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+        <div class="footer-content">
+            <!-- Brand & Company Overview -->
+            <div class="footer-col">
+                <div class="footer-logo-container">
+                    <img src="logo-white.png" alt="LankaScape Logo" class="footer-logo">
+                </div>
+                <div class="footer-company-name">LankaScape Inbound Tours & Travel (Pvt) Ltd</div>
+                <p>Your premier SLTDA-licensed inbound travel partner in Sri Lanka. Dedicated private chauffeur transport, certified tour guides, and tailor-made journeys.</p>
+                <div class="footer-social-links">
+                    <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://wa.me/94771234567" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links / Explore -->
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="index.html#destinations"><i class="fa-solid fa-angle-right" style="color: #f59e0b; font-size: 11px; margin-right: 6px;"></i> All Destinations</a></li>
+                    <li><a href="index.html#categories"><i class="fa-solid fa-angle-right" style="color: #f59e0b; font-size: 11px; margin-right: 6px;"></i> Travel Categories</a></li>
+                    <li><a href="my-bookings.html"><i class="fa-solid fa-angle-right" style="color: #f59e0b; font-size: 11px; margin-right: 6px;"></i> My Bookings</a></li>
+                    <li><a href="index.html"><i class="fa-solid fa-angle-right" style="color: #f59e0b; font-size: 11px; margin-right: 6px;"></i> Home</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Us & Head Office -->
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <div class="footer-contact-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span><strong>Head Office:</strong> Level 14, World Trade Center, Bank of Ceylon Mw, Colombo 01, Sri Lanka</span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa-solid fa-phone"></i>
+                    <span><strong>General Line:</strong> <a href="tel:+94112345678">+94 11 234 5678</a></span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <span><strong>24/7 Hotline:</strong> <a href="https://wa.me/94771234567" target="_blank">+94 77 123 4567</a></span>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span><strong>Email:</strong> <a href="mailto:info@lankascape.lk">info@lankascape.lk</a></span>
+                </div>
+            </div>
+
+            <!-- Legal & Certification -->
+            <div class="footer-col">
+                <h4>Legal & Info</h4>
+                <ul>
+                    <li style="color: #10b981; font-weight: 700; font-size: 12.5px; margin-bottom: 12px;">
+                        <i class="fa-solid fa-shield-halved"></i> SLTDA Reg: SLTDA/SQA/PRO/2026/0488
+                    </li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Tourist Safety Guidelines</a></li>
+                    <li><a href="#">Cancellation & Refund Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 LankaScape Inbound Tours & Travel (Pvt) Ltd — The Wonder of Asia. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Full CRUD Logic & Scripts -->
+    <script>
+        let allBookings = [];
+        let loggedInUser = null;
+
+        // 1. Check Authentication & Update Navbar
+        function checkAuth() {
+            const userString = localStorage.getItem('loggedInUser');
+            if (!userString) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Authentication Required',
+                    text: 'Please log in to manage your bookings.',
+                    confirmButtonText: 'Go to Login',
+                    background: '#1e293b',
+                    color: '#fff',
+                    confirmButtonColor: '#0284c7'
+                }).then(() => {
+                    window.location.href = "login.html";
+                });
+                return false;
+            }
+
+            loggedInUser = JSON.parse(userString);
+            const firstLetter = loggedInUser.fullName ? loggedInUser.fullName.charAt(0).toUpperCase() : 'U';
+
+            document.getElementById('authNavSlot').outerHTML = `
+                <li class="profile-dropdown">
+                    <div class="profile-dropdown-btn">
+                        <div class="profile-icon">${firstLetter}</div>
+                        <span>${loggedInUser.fullName.split(' ')[0]}</span>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="my-bookings.html">My Bookings</a>
+                        <a href="#" onclick="logout()" class="logout-btn">Logout</a>
+                    </div>
+                </li>
+            `;
+            return true;
+        }
+
+        // 2. READ: Fetch All Bookings for Logged-In User
+        function fetchBookings() {
+            if (!loggedInUser) return;
+
+            fetch(`http://localhost:8080/api/bookings/user/${loggedInUser.id}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Could not fetch bookings");
+                    return response.json();
+                })
+                .then(data => {
+                    allBookings = data;
+                    updateStats();
+                    applyFilterAndSort();
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('bookingsContainer').innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                            <h3>Unable to Load Bookings</h3>
+                            <p>Make sure the backend server is running and try refreshing.</p>
+                            <button onclick="fetchBookings()" class="btn-primary">Try Again</button>
+                        </div>
+                    `;
+                });
+        }
+
+        // Update Dashboard Summary Stats
+        function updateStats() {
+            const totalTrips = allBookings.length;
+            const totalSpent = allBookings.reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+            
+            document.getElementById('statTotalTrips').textContent = totalTrips;
+            document.getElementById('statTotalSpent').textContent = `Rs. ${totalSpent.toLocaleString()}`;
+        }
+
+        // 3. READ: Filter, Search & Sort Logic
+        function applyFilterAndSort() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const hotelFilter = document.getElementById('filterHotel').value;
+            const paymentFilter = document.getElementById('filterPayment') ? document.getElementById('filterPayment').value : 'ALL';
+            const sortOrder = document.getElementById('sortOrder').value;
+
+            let filtered = allBookings.filter(b => {
+                // Search Destination, Hotel, Booking ID or Txn Reference
+                const destName = (b.destination && b.destination.name) ? b.destination.name.toLowerCase() : '';
+                const hotelName = b.hotelName ? b.hotelName.toLowerCase() : '';
+                const bookingRef = `bk-${b.id}`;
+                const txnRef = b.transactionId ? b.transactionId.toLowerCase() : '';
+                const matchesSearch = destName.includes(searchQuery) || hotelName.includes(searchQuery) || bookingRef.includes(searchQuery) || txnRef.includes(searchQuery);
+
+                // Hotel Filter
+                let matchesHotel = true;
+                if (hotelFilter === 'WITH_HOTEL') {
+                    matchesHotel = b.hotelName && b.hotelName !== 'None';
+                } else if (hotelFilter === 'NO_HOTEL') {
+                    matchesHotel = !b.hotelName || b.hotelName === 'None';
+                }
+
+                // Payment Status Filter
+                let matchesPayment = true;
+                if (paymentFilter === 'PAID') {
+                    matchesPayment = b.paymentStatus === 'PAID';
+                } else if (paymentFilter === 'PENDING') {
+                    matchesPayment = b.paymentStatus !== 'PAID';
+                }
+
+                return matchesSearch && matchesHotel && matchesPayment;
+            });
+
+            // Sorting
+            filtered.sort((a, b) => {
+                if (sortOrder === 'DATE_DESC') {
+                    return new Date(b.travelDate || b.bookingDate) - new Date(a.travelDate || a.bookingDate);
+                } else if (sortOrder === 'DATE_ASC') {
+                    return new Date(a.travelDate || a.bookingDate) - new Date(b.travelDate || b.bookingDate);
+                } else if (sortOrder === 'PRICE_DESC') {
+                    return (b.totalPrice || 0) - (a.totalPrice || 0);
+                } else if (sortOrder === 'PRICE_ASC') {
+                    return (a.totalPrice || 0) - (b.totalPrice || 0);
+                } else if (sortOrder === 'QTY_DESC') {
+                    return (b.quantity || 0) - (a.quantity || 0);
+                }
+                return 0;
+            });
+
+            renderBookings(filtered);
+        }
+
+        // Render Cards to DOM
+        function renderBookings(bookings) {
+            const container = document.getElementById('bookingsContainer');
+
+            if (bookings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <h3>No Bookings Found</h3>
+                        <p>No bookings match your search or filter criteria.</p>
+                        <a href="index.html#destinations" class="btn-primary" style="display: inline-block;">Browse Destinations</a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            bookings.forEach(b => {
+                const dest = b.destination || {};
+                const imageUrl = dest.imageUrl || 'https://images.unsplash.com/photo-1588598198321-9735d491bc10?w=600';
+                const hotelDisplay = (b.hotelName && b.hotelName !== 'None') ? b.hotelName : 'Day Tour (No Stay)';
+                const vehicleDisplay = (b.vehicleType && b.vehicleType !== 'None') ? b.vehicleType : 'Self Arranged';
+                const guideDisplay = (b.guideType && b.guideType !== 'None') ? b.guideType : 'Chauffeur Guide';
+                const mealDisplay = (b.mealPlan && b.mealPlan !== 'None' && b.mealPlan !== 'No Meal Plan') ? b.mealPlan : 'Self Dining';
+                const pickupDisplay = b.pickupLocation || 'Colombo Hotel';
+                const usdTotal = Math.round((b.totalPrice || 0) / 305);
+
+                const card = document.createElement('div');
+                card.className = 'booking-card';
+                card.innerHTML = `
+                    <div class="booking-card-media" style="background-image: url('${imageUrl}');">
+                        <span class="booking-id-tag">#BK-${b.id}</span>
+                        <span class="booking-badge"><i class="fa-solid fa-circle-check"></i> Confirmed</span>
+                    </div>
+
+                    <div class="booking-card-body">
+                        <h3>${dest.name || 'Sri Lanka Journey'}</h3>
+
+                        <div class="booking-meta-row">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span>Date: <strong>${b.travelDate || 'Not specified'}</strong></span>
+                        </div>
+
+                        <div class="booking-meta-row">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                            <span title="${pickupDisplay}">Pickup: <strong>${pickupDisplay.length > 25 ? pickupDisplay.substring(0, 25) + '...' : pickupDisplay}</strong></span>
+                        </div>
+
+                        <div class="booking-meta-row">
+                            <i class="fa-solid fa-users"></i>
+                            <span>Travelers: <strong>${b.quantity} Person(s)</strong></span>
+                        </div>
+
+                        <div class="booking-meta-row">
+                            <i class="fa-solid fa-car-side"></i>
+                            <span>Vehicle: <strong>${vehicleDisplay}</strong></span>
+                        </div>
+
+                        <div class="booking-meta-row">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span>Guide: <strong>${guideDisplay}</strong></span>
+                        </div>
+
+                        <div class="booking-meta-row">
+                            <i class="fa-solid fa-utensils"></i>
+                            <span>Meals: <strong>${mealDisplay}</strong></span>
+                        </div>
+
+                        <div class="booking-meta-row">
+                            <i class="fa-solid fa-hotel"></i>
+                            <span>Stay: <strong>${hotelDisplay}</strong></span>
+                        </div>
+
+                        <div class="price-divider"></div>
+
+                        <div class="price-row">
+                            <span class="label">Total Amount</span>
+                            <div style="text-align: right;">
+                                <span class="amount">Rs. ${(b.totalPrice || 0).toLocaleString()}</span>
+                                <div style="font-size: 12px; color: #38bdf8; font-weight: 600;">(~$${usdTotal} USD)</div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Status Badge -->
+                        <div style="margin: 8px 0 12px; padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; ${(b.paymentStatus === 'PAID') ? 'background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);' : 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);'}">
+                            <span>
+                                <i class="${(b.paymentStatus === 'PAID') ? 'fa-solid fa-circle-check' : 'fa-solid fa-clock'}"></i>
+                                ${(b.paymentStatus === 'PAID') ? 'PAID IN FULL' : 'PAY ON ARRIVAL'}
+                            </span>
+                            <span style="font-size: 10.5px; opacity: 0.9; font-family: monospace;">
+                                ${b.transactionId ? b.transactionId : ((b.paymentStatus === 'PAID') ? 'CARD-VERIFIED' : 'CASH-CHAUFFEUR')}
+                            </span>
+                        </div>
+
+                        <div class="card-btn-group">
+                            ${(b.paymentStatus !== 'PAID') ? `
+                            <button class="btn-action" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4);" onclick="payOnlineForBooking(${b.id})" title="Pay Online with Credit/Debit Card">
+                                <i class="fa-solid fa-credit-card"></i> Pay Online
+                            </button>` : ''}
+                            <button class="btn-action" style="background: rgba(224, 122, 39, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4);" onclick="printBookingVoucher(${b.id})" title="Print Official Tour Voucher">
+                                <i class="fa-solid fa-print"></i> Print
+                            </button>
+                            <button class="btn-action btn-action-view" onclick="viewBookingDetails(${b.id})" title="View Tour E-Voucher & QR">
+                                <i class="fa-solid fa-file-invoice"></i> Voucher
+                            </button>
+                            <button class="btn-action btn-action-edit" onclick="editBookingModal(${b.id})" title="Edit / Reschedule Tour">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button class="btn-action btn-action-delete" onclick="deleteBookingConfirm(${b.id})" title="Cancel Booking">
+                                <i class="fa-solid fa-trash-can"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // 4. READ (SINGLE): View Details / E-Receipt Modal with Real Dynamic QR Code
+        function viewBookingDetails(id) {
+            const booking = allBookings.find(b => b.id === id);
+            if (!booking) return;
+
+            const dest = booking.destination || {};
+            const unitPrice = dest.ticketPrice || 0;
+            const ticketTotal = booking.ticketCost || (booking.quantity * unitPrice);
+            const transportTotal = booking.transportCost || 0;
+            const guideTotal = booking.guideCost || 0;
+            const mealTotal = booking.mealCost || 0;
+            const hotelTotal = booking.hotelCost || 0;
+            const grandTotal = booking.totalPrice || (ticketTotal + transportTotal + guideTotal + mealTotal + hotelTotal);
+            const usdTotal = Math.round(grandTotal / 305);
+
+            const bookingRef = `BK-2026-${String(booking.id).padStart(4, '0')}`;
+            const qrPayload = `https://lankascape.lk/verify?ref=${bookingRef}&pax=${encodeURIComponent(loggedInUser.fullName)}&dest=${encodeURIComponent(dest.name)}&date=${booking.travelDate}&total=${grandTotal}`;
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrPayload)}`;
+
+            Swal.fire({
+                title: 'Official Tour E-Voucher',
+                html: `
+                    <div id="printVoucherSection" style="text-align: left; font-size: 13.5px; color: #cbd5e1; line-height: 1.5;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e07a27; padding-bottom: 10px; margin-bottom: 14px;">
+                            <div>
+                                <h4 style="margin: 0; color: #ffffff; font-size: 16px;">LankaScape Inbound Tours</h4>
+                                <span style="font-size: 11px; color: #94a3b8;">Colombo Head Office • Sri Lanka</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-size: 11px; color: #94a3b8; display: block;">VOUCHER REF</span>
+                                <strong style="color: #38bdf8; font-size: 14px;">#${bookingRef}</strong>
+                            </div>
+                        </div>
+
+                        <div style="background: #0f172a; padding: 14px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 14px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>Lead Traveler:</span> <strong style="color: #f1f5f9;">${loggedInUser.fullName}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>Tour Destination:</span> <strong style="color: #10b981;">${dest.name}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>Travel Date:</span> <strong>${booking.travelDate || 'N/A'}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>Departure Pickup:</span> <strong style="color: #fcd34d;">${booking.pickupLocation || 'Colombo Hotel'}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>Vehicle / Fleet:</span> <strong>${booking.vehicleType || 'None (Self Arranged)'}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>Tourist Guide:</span> <strong>${booking.guideType || 'Chauffeur Guide'}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span>Meal Plan:</span> <strong>${booking.mealPlan || 'No Meal Plan'}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Accommodation:</span> <strong>${booking.hotelName || 'Day Tour'}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px; margin-top: 6px;">
+                                <span>Payment Status:</span>
+                                <strong style="color: ${booking.paymentStatus === 'PAID' ? '#10b981' : '#f59e0b'};">
+                                    <i class="fa-solid ${booking.paymentStatus === 'PAID' ? 'fa-circle-check' : 'fa-clock'}"></i>
+                                    ${booking.paymentStatus === 'PAID' ? 'PAID IN FULL' : 'PAY ON ARRIVAL'}
+                                </strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Transaction Ref:</span>
+                                <strong style="color: #38bdf8; font-family: monospace;">${booking.transactionId || (booking.paymentStatus === 'PAID' ? 'ONLINE-VERIFIED' : 'POA-CHAUFFEUR')}</strong>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px dashed #475569; padding-top: 10px; margin-bottom: 12px;">
+                            <div style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px;">Itemized Tour Breakdown</div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>${booking.quantity} × Site Entry Pass:</span>
+                                <span>Rs. ${ticketTotal.toLocaleString()}</span>
+                            </div>
+                            ${transportTotal > 0 ? `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>Colombo Private Transport:</span>
+                                <span>Rs. ${transportTotal.toLocaleString()}</span>
+                            </div>` : ''}
+                            ${guideTotal > 0 ? `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>Dedicated Tourist Guide:</span>
+                                <span>Rs. ${guideTotal.toLocaleString()}</span>
+                            </div>` : ''}
+                            ${mealTotal > 0 ? `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>Food & Meal Plan:</span>
+                                <span>Rs. ${mealTotal.toLocaleString()}</span>
+                            </div>` : ''}
+                            ${hotelTotal > 0 ? `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span>Hotel Accommodation:</span>
+                                <span>Rs. ${hotelTotal.toLocaleString()}</span>
+                            </div>` : ''}
+
+                            <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; color: #10b981; border-top: 1px solid #334155; padding-top: 8px; margin-top: 6px;">
+                                <span>Grand Total:</span>
+                                <span>Rs. ${grandTotal.toLocaleString()} <span style="font-size: 12px; color: #38bdf8;">(~$${usdTotal} USD)</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Real Unique Scannable QR Code -->
+                        <div style="text-align: center; margin-top: 14px; background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+                            <img src="${qrCodeUrl}" alt="Booking Verification QR" style="width: 130px; height: 130px; border-radius: 8px; background: #ffffff; padding: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                            <div style="font-size: 11px; color: #38bdf8; font-weight: 700; margin-top: 6px; letter-spacing: 0.5px;">
+                                <i class="fa-solid fa-qrcode"></i> UNIQUE PASSENGER QR CODE
+                            </div>
+                            <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">
+                                Scan at vehicle pickup or entry gate to verify reservation
+                            </div>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa-solid fa-print"></i> Print Official Voucher',
+                cancelButtonText: 'Close',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#e07a27'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    printBookingVoucher(id);
+                }
+            });
+        }
+
+        // Dedicated High-Resolution A4 Tour Voucher Print Generator
+        function printBookingVoucher(id) {
+            const booking = allBookings.find(b => b.id === id);
+            if (!booking) return;
+
+            const dest = booking.destination || {};
+            const unitPrice = dest.ticketPrice || 0;
+            const ticketTotal = booking.ticketCost || (booking.quantity * unitPrice);
+            const transportTotal = booking.transportCost || 0;
+            const guideTotal = booking.guideCost || 0;
+            const mealTotal = booking.mealCost || 0;
+            const hotelTotal = booking.hotelCost || 0;
+            const grandTotal = booking.totalPrice || (ticketTotal + transportTotal + guideTotal + mealTotal + hotelTotal);
+            const usdTotal = Math.round(grandTotal / 305);
+            const isPaid = (booking.paymentStatus === 'PAID');
+            const txnId = booking.transactionId || (isPaid ? 'TXN-LS-VERIFIED' : 'POA-CHAUFFEUR');
+
+            const bookingRef = `BK-2026-${String(booking.id).padStart(4, '0')}`;
+            const qrPayload = `https://lankascape.lk/verify?ref=${bookingRef}&pax=${encodeURIComponent(loggedInUser.fullName)}&dest=${encodeURIComponent(dest.name)}&date=${booking.travelDate}&total=${grandTotal}&pay=${booking.paymentStatus}&txn=${txnId}`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrPayload)}`;
+
+            const printWindow = window.open('', '_blank', 'width=880,height=960');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>LankaScape Tour E-Voucher - ${bookingRef}</title>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                    <style>
+                        @page { size: A4 portrait; margin: 12mm 15mm; }
+                        * { box-sizing: border-box; margin: 0; padding: 0; }
+                        body {
+                            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+                            background: #f1f5f9;
+                            color: #1e293b;
+                            padding: 24px;
+                            font-size: 13px;
+                            line-height: 1.5;
+                        }
+                        .print-controls-bar {
+                            max-width: 780px;
+                            margin: 0 auto 16px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        }
+                        .btn-print-action {
+                            background: #e07a27;
+                            color: #ffffff;
+                            border: none;
+                            padding: 11px 24px;
+                            border-radius: 8px;
+                            font-weight: 700;
+                            font-size: 14px;
+                            cursor: pointer;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            box-shadow: 0 4px 12px rgba(224, 122, 39, 0.3);
+                        }
+                        .btn-print-action:hover { background: #c25e11; }
+                        .voucher-card {
+                            max-width: 780px;
+                            margin: 0 auto;
+                            border: 2px solid #cbd5e1;
+                            border-radius: 12px;
+                            padding: 32px;
+                            background: #ffffff;
+                            position: relative;
+                            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+                        }
+                        .header-row {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                            border-bottom: 2px solid #e07a27;
+                            padding-bottom: 18px;
+                            margin-bottom: 22px;
+                        }
+                        .brand-name {
+                            font-size: 26px;
+                            font-weight: 800;
+                            color: #0f172a;
+                            letter-spacing: -0.5px;
+                        }
+                        .brand-name span { color: #e07a27; }
+                        .brand-desc {
+                            font-size: 12px;
+                            color: #64748b;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                        }
+                        .company-meta {
+                            font-size: 11px;
+                            color: #64748b;
+                            margin-top: 4px;
+                            line-height: 1.4;
+                        }
+                        .ref-box {
+                            text-align: right;
+                        }
+                        .ref-title {
+                            font-size: 11px;
+                            color: #64748b;
+                            text-transform: uppercase;
+                            font-weight: 700;
+                        }
+                        .ref-num {
+                            font-size: 20px;
+                            font-weight: 800;
+                            color: #0284c7;
+                            letter-spacing: 1px;
+                        }
+                        .verified-badge {
+                            display: inline-block;
+                            font-size: 11px;
+                            font-weight: 700;
+                            padding: 3px 12px;
+                            border-radius: 20px;
+                            margin-top: 4px;
+                        }
+                        .section-heading {
+                            font-size: 12px;
+                            font-weight: 800;
+                            color: #475569;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            margin-bottom: 10px;
+                            border-left: 4px solid #e07a27;
+                            padding-left: 8px;
+                        }
+                        .info-grid {
+                            display: grid;
+                            grid-template-columns: repeat(2, 1fr);
+                            gap: 12px 24px;
+                            background: #f8fafc;
+                            padding: 16px 20px;
+                            border-radius: 8px;
+                            border: 1px solid #e2e8f0;
+                            margin-bottom: 22px;
+                        }
+                        .info-item strong {
+                            display: block;
+                            font-size: 11px;
+                            color: #64748b;
+                            text-transform: uppercase;
+                        }
+                        .info-item span {
+                            font-size: 14px;
+                            color: #0f172a;
+                            font-weight: 600;
+                        }
+                        .cost-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 22px;
+                        }
+                        .cost-table th {
+                            background: #f1f5f9;
+                            color: #334155;
+                            font-weight: 700;
+                            text-align: left;
+                            padding: 10px 14px;
+                            font-size: 12px;
+                            border-bottom: 2px solid #cbd5e1;
+                        }
+                        .cost-table td {
+                            padding: 10px 14px;
+                            border-bottom: 1px solid #e2e8f0;
+                            color: #334155;
+                        }
+                        .cost-table tr.total-row td {
+                            font-weight: 800;
+                            font-size: 16px;
+                            color: #0f172a;
+                            background: #fffbeb;
+                            border-top: 2px solid #e07a27;
+                            border-bottom: 2px solid #e07a27;
+                        }
+                        .verification-footer {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            border-top: 1px dashed #cbd5e1;
+                            padding-top: 18px;
+                            margin-top: 10px;
+                        }
+                        .notice-box {
+                            max-width: 520px;
+                            font-size: 11.5px;
+                            color: #64748b;
+                            line-height: 1.6;
+                        }
+                        .notice-box ul {
+                            list-style-position: inside;
+                            margin-top: 6px;
+                        }
+                        .qr-wrap {
+                            text-align: center;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                        }
+                        .qr-frame {
+                            width: 135px;
+                            height: 135px;
+                            border: 1px solid #cbd5e1;
+                            border-radius: 8px;
+                            padding: 6px;
+                            background: #ffffff;
+                            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+                        }
+                        @media print {
+                            body { background: #ffffff; padding: 0; }
+                            .print-controls-bar { display: none !important; }
+                            .voucher-card { border: none; padding: 0; box-shadow: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-controls-bar">
+                        <span style="font-size: 14px; color: #475569; font-weight: 600;">
+                            <i class="fa-solid fa-file-invoice"></i> Official Passenger Voucher
+                        </span>
+                        <button class="btn-print-action" onclick="window.print()">
+                            <i class="fa-solid fa-print"></i> Print Voucher / Save as PDF
+                        </button>
+                    </div>
+
+                    <div class="voucher-card">
+                        <div class="header-row">
+                            <div>
+                                <div class="brand-name">Lanka<span>Scape</span></div>
+                                <div class="brand-desc">Inbound Tours & Travel Colombo • Official E-Voucher</div>
+                                <div class="company-meta">
+                                    Head Office: Level 14, World Trade Center, Colombo 01, Sri Lanka<br>
+                                    Hotline: +94 11 234 5678 • Email: tours@lankascape.lk • SLTDA/SQA/PRO/2026/0488
+                                </div>
+                            </div>
+                            <div class="ref-box">
+                                <div class="ref-title">VOUCHER REFERENCE</div>
+                                <div class="ref-num">#${bookingRef}</div>
+                                <div class="verified-badge" style="background: ${isPaid ? '#dcfce7' : '#fef3c7'}; color: ${isPaid ? '#15803d' : '#b45309'}; border: 1px solid ${isPaid ? '#86efac' : '#fcd34d'};">
+                                    <i class="fa-solid ${isPaid ? 'fa-circle-check' : 'fa-clock'}"></i> ${isPaid ? 'PAID IN FULL • ' + txnId : 'PAY ON ARRIVAL • PENDING'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-heading">Tour Itinerary & Passenger Details</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>Lead Passenger Name:</strong>
+                                <span>${loggedInUser.fullName}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Tour Destination:</strong>
+                                <span style="color: #0284c7;">${dest.name}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Travel Date:</strong>
+                                <span>${booking.travelDate || 'Not specified'}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Passenger Count:</strong>
+                                <span>${booking.quantity} Person(s)</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Departure / Pickup Point:</strong>
+                                <span style="color: #b45309;">${booking.pickupLocation || 'Colombo Hotel'}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Transport Vehicle:</strong>
+                                <span>${booking.vehicleType || 'None (Self Arranged)'}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Dedicated Tourist Guide:</strong>
+                                <span>${booking.guideType || 'Chauffeur Guide Only'}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Food & Dining Plan:</strong>
+                                <span>${booking.mealPlan || 'No Meal Plan'}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Accommodation / Hotel Stay:</strong>
+                                <span>${booking.hotelName || 'Day Tour (No Overnight Stay)'}</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Payment Status & Ref:</strong>
+                                <span style="color: ${isPaid ? '#15803d' : '#b45309'}; font-weight: 700; font-family: monospace;">
+                                    ${isPaid ? 'PAID (' + txnId + ')' : 'PAY ON ARRIVAL (' + txnId + ')'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="section-heading">Itemized Payment & Receipt Details</div>
+                        <table class="cost-table">
+                            <thead>
+                                <tr>
+                                    <th>Package Component</th>
+                                    <th>Service Description</th>
+                                    <th style="text-align: right;">Amount (LKR)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Site Entry Passes</strong></td>
+                                    <td>${booking.quantity} × Official Sanctuary/Site Passes</td>
+                                    <td style="text-align: right;">Rs. ${ticketTotal.toLocaleString()}</td>
+                                </tr>
+                                ${transportTotal > 0 ? `
+                                <tr>
+                                    <td><strong>Colombo Private Transport</strong></td>
+                                    <td>Roundtrip AC Chauffeur Vehicle & Highway Tolls (${booking.vehicleType})</td>
+                                    <td style="text-align: right;">Rs. ${transportTotal.toLocaleString()}</td>
+                                </tr>` : ''}
+                                ${guideTotal > 0 ? `
+                                <tr>
+                                    <td><strong>Dedicated Tourist Guide</strong></td>
+                                    <td>${booking.guideType}</td>
+                                    <td style="text-align: right;">Rs. ${guideTotal.toLocaleString()}</td>
+                                </tr>` : ''}
+                                ${mealTotal > 0 ? `
+                                <tr>
+                                    <td><strong>Food & Dining Plan</strong></td>
+                                    <td>${booking.mealPlan} (${booking.quantity} Pax)</td>
+                                    <td style="text-align: right;">Rs. ${mealTotal.toLocaleString()}</td>
+                                </tr>` : ''}
+                                ${hotelTotal > 0 ? `
+                                <tr>
+                                    <td><strong>Hotel Accommodation</strong></td>
+                                    <td>${booking.hotelName}</td>
+                                    <td style="text-align: right;">Rs. ${hotelTotal.toLocaleString()}</td>
+                                </tr>` : ''}
+                                <tr>
+                                    <td><strong>Payment Method & Processing</strong></td>
+                                    <td>${booking.paymentMethod || 'Credit/Debit Card'} (Ref: ${txnId})</td>
+                                    <td style="text-align: right; color: ${isPaid ? '#15803d' : '#b45309'}; font-weight: 700;">
+                                        ${isPaid ? 'CONFIRMED PAID' : 'PENDING ARRIVAL'}
+                                    </td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td colspan="2"><strong>${isPaid ? 'Grand Total Paid (All Inclusive)' : 'Total Due on Arrival (To Chauffeur)'}</strong></td>
+                                    <td style="text-align: right; color: ${isPaid ? '#15803d' : '#b45309'};">
+                                        Rs. ${grandTotal.toLocaleString()}<br>
+                                        <span style="font-size: 13px; color: #0284c7; font-weight: 600;">(~$${usdTotal} USD)</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="verification-footer">
+                            <div class="notice-box">
+                                <strong style="color: #0f172a;">Essential Passenger Notice:</strong>
+                                <ul>
+                                    <li>Please present this digital voucher or physical printout upon vehicle pickup.</li>
+                                    <li>Your chauffeur will meet you at the designated departure point holding a LankaScape name board.</li>
+                                    <li>${isPaid ? 'Payment is fully settled. No additional site or chauffeur transport charges.' : 'Payment of Rs. ' + grandTotal.toLocaleString() + ' is due to your chauffeur upon departure.'}</li>
+                                    <li>24/7 Agency Helpline & Dispatch: <strong>+94 11 234 5678</strong>.</li>
+                                    <li>SLTDA Certified Inbound Tour Operator. Free cancellation up to 24h prior.</li>
+                                </ul>
+                            </div>
+                            <div class="qr-wrap">
+                                <img src="${qrUrl}" alt="Booking QR Code" class="qr-frame">
+                                <span style="font-size: 10px; color: #64748b; margin-top: 4px; font-weight: 700; letter-spacing: 0.5px;">SCAN TO VERIFY PASS</span>
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // 5. Pay Online Modal for Existing 'Pay on Arrival' Bookings
+        function payOnlineForBooking(id) {
+            const booking = allBookings.find(b => b.id === id);
+            if (!booking) return;
+
+            const dest = booking.destination || {};
+            const amountLkr = Number(booking.totalPrice || 0).toLocaleString();
+            const usdTotal = Math.round((booking.totalPrice || 0) / 305);
+
+            Swal.fire({
+                title: '',
+                width: 480,
+                background: '#1e293b',
+                color: '#f8fafc',
+                showCancelButton: true,
+                confirmButtonText: `<i class="fa-solid fa-lock"></i> Pay Rs. ${amountLkr}`,
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                focusConfirm: false,
+                html: `
+                    <div style="text-align: left; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 16px;">
+                            <div>
+                                <div style="font-size: 18px; font-weight: 800; color: #ffffff;">Pay Booking Online</div>
+                                <div style="font-size: 11px; color: #94a3b8;"><i class="fa-solid fa-shield-halved" style="color: #10b981;"></i> 256-bit SSL • LankaPay / 3D-Secure 2.0</div>
+                            </div>
+                            <div style="display: flex; gap: 8px; font-size: 24px;">
+                                <i class="fa-brands fa-cc-visa" style="color: #38bdf8;"></i>
+                                <i class="fa-brands fa-cc-mastercard" style="color: #f97316;"></i>
+                            </div>
+                        </div>
+
+                        <!-- Realistic Credit Card Graphic Preview -->
+                        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); border-radius: 14px; padding: 18px 20px; color: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); margin-bottom: 16px; position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <i class="fa-solid fa-microchip" style="color: #fcd34d; font-size: 28px;"></i>
+                                <span id="previewCardBrandMB" style="font-size: 14px; font-weight: 800; letter-spacing: 1px; color: #38bdf8;">VISA</span>
+                            </div>
+                            <div id="previewCardNumberMB" style="font-family: monospace; font-size: 18px; letter-spacing: 2px; margin-bottom: 14px; color: #f8fafc;">
+                                •••• •••• •••• ••••
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                                <div>
+                                    <span style="color: #94a3b8; display: block; font-size: 9px; text-transform: uppercase;">Card Holder</span>
+                                    <strong id="previewCardNameMB" style="color: #ffffff; text-transform: uppercase;">${(loggedInUser.fullName || 'TOURIST NAME').substring(0, 22)}</strong>
+                                </div>
+                                <div>
+                                    <span style="color: #94a3b8; display: block; font-size: 9px; text-transform: uppercase;">Expires</span>
+                                    <strong id="previewCardExpiryMB" style="color: #ffffff;">MM/YY</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12.5px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span style="color: #94a3b8;">Tour:</span> <strong style="color: #f1f5f9;">${dest.name || 'Sri Lanka Tour'}</strong>
+                            </div>
+                            <div>
+                                <span style="color: #94a3b8;">Total:</span> <strong style="color: #10b981; font-size: 14px;">Rs. ${amountLkr}</strong>
+                                <span style="color: #38bdf8; font-size: 11px;">(~$${usdTotal} USD)</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; font-size: 11.5px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; text-transform: uppercase;">Cardholder Name</label>
+                            <input type="text" id="payCardNameMB" value="${loggedInUser.fullName || ''}" placeholder="Name as on card" style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 13.5px; outline: none;">
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; font-size: 11.5px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; text-transform: uppercase;">Card Number</label>
+                            <div style="position: relative;">
+                                <input type="text" id="payCardNumberMB" placeholder="4532 •••• •••• ••••" maxlength="19" style="width: 100%; box-sizing: border-box; padding: 10px 40px 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 14px; font-family: monospace; outline: none;">
+                                <i id="inputCardBrandIconMB" class="fa-solid fa-credit-card" style="position: absolute; right: 12px; top: 12px; color: #94a3b8;"></i>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                            <div>
+                                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; text-transform: uppercase;">Expiration (MM/YY)</label>
+                                <input type="text" id="payCardExpiryMB" placeholder="12/28" maxlength="5" style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 13.5px; font-family: monospace; outline: none;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 11.5px; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; text-transform: uppercase;">CVV / CVC (3-digit)</label>
+                                <input type="password" id="payCardCvvMB" placeholder="•••" maxlength="4" style="width: 100%; box-sizing: border-box; padding: 10px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #ffffff; font-size: 13.5px; font-family: monospace; outline: none;">
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 4px; margin-bottom: 6px;">
+                            <button type="button" id="btnFillDemoCardMB" style="background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px dashed rgba(56, 189, 248, 0.4); padding: 6px 14px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Click here to auto-fill Test Demo Card
+                            </button>
+                        </div>
+                    </div>
+                `,
+                didOpen: () => {
+                    const inputNum = document.getElementById('payCardNumberMB');
+                    const inputName = document.getElementById('payCardNameMB');
+                    const inputExp = document.getElementById('payCardExpiryMB');
+                    const inputCvv = document.getElementById('payCardCvvMB');
+                    const previewNum = document.getElementById('previewCardNumberMB');
+                    const previewName = document.getElementById('previewCardNameMB');
+                    const previewExp = document.getElementById('previewCardExpiryMB');
+                    const previewBrand = document.getElementById('previewCardBrandMB');
+                    const inputBrandIcon = document.getElementById('inputCardBrandIconMB');
+                    const btnFillDemo = document.getElementById('btnFillDemoCardMB');
+
+                    inputNum.addEventListener('input', (e) => {
+                        let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+                        let formatted = val.match(/.{1,4}/g)?.join(' ') || '';
+                        e.target.value = formatted;
+                        previewNum.textContent = formatted || '•••• •••• •••• ••••';
+
+                        if (val.startsWith('4')) {
+                            previewBrand.textContent = 'VISA';
+                            previewBrand.style.color = '#38bdf8';
+                            inputBrandIcon.className = 'fa-brands fa-cc-visa';
+                            inputBrandIcon.style.color = '#38bdf8';
+                        } else if (val.startsWith('5')) {
+                            previewBrand.textContent = 'MASTERCARD';
+                            previewBrand.style.color = '#f97316';
+                            inputBrandIcon.className = 'fa-brands fa-cc-mastercard';
+                            inputBrandIcon.style.color = '#f97316';
+                        } else {
+                            previewBrand.textContent = 'CARD';
+                            previewBrand.style.color = '#ffffff';
+                            inputBrandIcon.className = 'fa-solid fa-credit-card';
+                            inputBrandIcon.style.color = '#94a3b8';
+                        }
+                    });
+
+                    inputName.addEventListener('input', (e) => {
+                        previewName.textContent = (e.target.value || loggedInUser.fullName || 'TOURIST NAME').substring(0, 22).toUpperCase();
+                    });
+
+                    inputExp.addEventListener('input', (e) => {
+                        let val = e.target.value.replace(/\D/g, '').substring(0, 4);
+                        if (val.length >= 2) {
+                            val = val.substring(0, 2) + '/' + val.substring(2);
+                        }
+                        e.target.value = val;
+                        previewExp.textContent = val || 'MM/YY';
+                    });
+
+                    btnFillDemo.addEventListener('click', () => {
+                        inputName.value = loggedInUser.fullName || 'MR. JOHN DOE';
+                        inputNum.value = '4532 8820 1934 5621';
+                        inputExp.value = '11/28';
+                        inputCvv.value = '782';
+
+                        previewName.textContent = inputName.value.toUpperCase();
+                        previewNum.textContent = inputNum.value;
+                        previewExp.textContent = inputExp.value;
+                        previewBrand.textContent = 'VISA';
+                        previewBrand.style.color = '#38bdf8';
+                        inputBrandIcon.className = 'fa-brands fa-cc-visa';
+                        inputBrandIcon.style.color = '#38bdf8';
+                    });
+                },
+                preConfirm: () => {
+                    const cardName = document.getElementById('payCardNameMB').value.trim();
+                    const rawCardNum = document.getElementById('payCardNumberMB').value.replace(/\s/g, '');
+                    const cardExpiry = document.getElementById('payCardExpiryMB').value.trim();
+                    const cardCvv = document.getElementById('payCardCvvMB').value.trim();
+
+                    if (!cardName) {
+                        Swal.showValidationMessage('Please enter cardholder name');
+                        return false;
+                    }
+                    if (rawCardNum.length < 16) {
+                        Swal.showValidationMessage('Please enter a valid 16-digit card number');
+                        return false;
+                    }
+                    if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+                        Swal.showValidationMessage('Please enter a valid expiry date (MM/YY)');
+                        return false;
+                    }
+                    if (cardCvv.length < 3) {
+                        Swal.showValidationMessage('Please enter a 3 or 4 digit CVV/CVC code');
+                        return false;
+                    }
+                    return { cardName, rawCardNum, cardExpiry, cardCvv };
+                }
+            }).then(res => {
+                if (res.isConfirmed) {
+                    Swal.fire({
+                        title: 'Authorizing Online Payment...',
+                        html: '<span style="color: #38bdf8;">Connecting to LankaPay 3D-Secure 2.0 Gateway...</span>',
+                        allowOutsideClick: false,
+                        background: '#1e293b',
+                        color: '#fff',
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    setTimeout(() => {
+                        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                        let code = '';
+                        for (let i = 0; i < 6; i++) {
+                            code += chars.charAt(Math.floor(Math.random() * chars.length));
+                        }
+                        const newTxnId = `TXN-LS-${Date.now().toString(36).toUpperCase()}-${code}`;
+
+                        fetch(`http://localhost:8080/api/bookings/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                paymentStatus: 'PAID',
+                                paymentMethod: 'Visa',
+                                transactionId: newTxnId
+                            })
+                        })
+                        .then(r => {
+                            if (!r.ok) throw new Error('Payment confirmation failed');
+                            return r.json();
+                        })
+                        .then(updated => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Payment Successful!',
+                                html: `
+                                    <div style="font-size: 13.5px; color: #cbd5e1; text-align: left; line-height: 1.6;">
+                                        <p style="margin-bottom: 6px;">Your booking <strong>#BK-${updated.id}</strong> is now marked as <strong>PAID IN FULL</strong>.</p>
+                                        <div style="background: #0f172a; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; margin-top: 10px;">
+                                            <span style="color: #94a3b8;">TRANSACTION REF:</span>
+                                            <strong style="color: #10b981;">${newTxnId}</strong>
+                                        </div>
+                                    </div>
+                                `,
+                                confirmButtonText: 'Done',
+                                confirmButtonColor: '#10b981',
+                                background: '#1e293b',
+                                color: '#fff'
+                            });
+                            fetchBookings(); // refresh list with updated status
+                        })
+                        .catch(err => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Payment Failed',
+                                text: err.message,
+                                background: '#1e293b',
+                                color: '#fff'
+                            });
+                        });
+                    }, 1200);
+                }
+            });
+        }
+
+        // 5. UPDATE: Edit / Reschedule Modal & PUT Request
+        function editBookingModal(id) {
+            const booking = allBookings.find(b => b.id === id);
+            if (!booking) return;
+
+            const dest = booking.destination || {};
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            Swal.fire({
+                title: `Edit Booking #${booking.id}`,
+                html: `
+                    <div style="text-align: left; font-size: 13.5px; color: #cbd5e1;">
+                        <p style="margin-bottom: 15px; color: #94a3b8;">Destination: <strong style="color: #38bdf8;">${dest.name}</strong></p>
+                        
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Travel Date:</label>
+                        <input type="date" id="editTravelDate" class="swal2-input" min="${todayStr}" value="${booking.travelDate || ''}" style="margin: 0 0 16px; width: 100%;">
+                        
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Number of Travelers:</label>
+                        <input type="number" id="editQty" class="swal2-input" min="1" max="20" value="${booking.quantity || 1}" style="margin: 0 0 16px; width: 100%;">
+
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Pickup Location:</label>
+                        <select id="editPickup" class="swal2-select" style="margin: 0 0 16px; width: 100%;">
+                            <option value="Colombo City Hotel (Cinnamon / Shangri-La / Galle Face / Hilton)" ${booking.pickupLocation && booking.pickupLocation.includes('Colombo City') ? 'selected' : ''}>Colombo City Hotel</option>
+                            <option value="Bandaranaike International Airport (CMB) - Arrival Lounge" ${booking.pickupLocation && booking.pickupLocation.includes('Airport') ? 'selected' : ''}>Bandaranaike Int. Airport (CMB)</option>
+                            <option value="Negombo Coastal Beach Hotel" ${booking.pickupLocation && booking.pickupLocation.includes('Negombo') ? 'selected' : ''}>Negombo Beach Hotel</option>
+                            <option value="Mount Lavinia Beach Hotel" ${booking.pickupLocation && booking.pickupLocation.includes('Mount Lavinia') ? 'selected' : ''}>Mount Lavinia Hotel</option>
+                            <option value="Self Arrival / Direct at Destination Gate" ${booking.pickupLocation && booking.pickupLocation.includes('Self') ? 'selected' : ''}>Self Arrival / Direct</option>
+                        </select>
+
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Transport Vehicle:</label>
+                        <select id="editVehicle" class="swal2-select" style="margin: 0 0 16px; width: 100%;">
+                            <option value="None" ${!booking.vehicleType || booking.vehicleType === 'None' ? 'selected' : ''}>No Transport (Self Arranged)</option>
+                            <option value="Private AC Sedan (1-3 Pax)" ${booking.vehicleType && booking.vehicleType.includes('Sedan') ? 'selected' : ''}>Private AC Sedan (1-3 Pax)</option>
+                            <option value="Luxury AC Van (4-8 Pax)" ${booking.vehicleType && booking.vehicleType.includes('Van') ? 'selected' : ''}>Luxury AC Van (4-8 Pax)</option>
+                            <option value="Tourist Mini Coach (9-15 Pax)" ${booking.vehicleType && booking.vehicleType.includes('Coach') ? 'selected' : ''}>Tourist Mini Coach (9-15 Pax)</option>
+                        </select>
+
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Tourist Guide:</label>
+                        <select id="editGuide" class="swal2-select" style="margin: 0 0 16px; width: 100%;">
+                            <option value="None (Chauffeur Guide)" ${!booking.guideType || booking.guideType.includes('Chauffeur') ? 'selected' : ''}>Chauffeur Guide Only</option>
+                            <option value="SLTDA Licensed English Guide" ${booking.guideType && booking.guideType.includes('English') ? 'selected' : ''}>SLTDA Licensed English Guide</option>
+                            <option value="Multilingual Specialist Guide" ${booking.guideType && booking.guideType.includes('Multilingual') ? 'selected' : ''}>Multilingual Specialist Guide</option>
+                        </select>
+
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Meal Plan:</label>
+                        <select id="editMeal" class="swal2-select" style="margin: 0 0 16px; width: 100%;">
+                            <option value="No Meal Plan" ${!booking.mealPlan || booking.mealPlan === 'No Meal Plan' ? 'selected' : ''}>No Meal Plan</option>
+                            <option value="Bed & Breakfast" ${booking.mealPlan === 'Bed & Breakfast' ? 'selected' : ''}>Bed & Breakfast</option>
+                            <option value="Half Board" ${booking.mealPlan === 'Half Board' ? 'selected' : ''}>Half Board</option>
+                            <option value="Full Board All-Inclusive" ${booking.mealPlan === 'Full Board All-Inclusive' ? 'selected' : ''}>Full Board All-Inclusive</option>
+                        </select>
+                        
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Accommodation:</label>
+                        <select id="editHotel" class="swal2-select" style="margin: 0 0 16px; width: 100%;">
+                            <option value="None" ${booking.hotelName === 'None' ? 'selected' : ''}>No Accommodation (Day Tour)</option>
+                            <option value="3-Star Boutique Hotel" ${booking.hotelName && booking.hotelName.includes('3-Star') ? 'selected' : ''}>3-Star Boutique Hotel</option>
+                            <option value="4-Star Deluxe Resort (Jetwing / Cinnamon)" ${booking.hotelName && (booking.hotelName.includes('4-Star') || booking.hotelName.includes('Jetwing')) ? 'selected' : ''}>4-Star Deluxe Resort</option>
+                            <option value="5-Star Luxury Heritage Resort (Shangri-La / Heritance)" ${booking.hotelName && (booking.hotelName.includes('5-Star') || booking.hotelName.includes('Shangri-La')) ? 'selected' : ''}>5-Star Luxury Resort</option>
+                        </select>
+
+                        <label style="display: block; margin-bottom: 6px; font-weight: 600;">Payment Method:</label>
+                        <select id="editPayment" class="swal2-select" style="margin: 0; width: 100%;">
+                            <option value="Visa" ${booking.paymentMethod === 'Visa' ? 'selected' : ''}>Visa Card</option>
+                            <option value="Mastercard" ${booking.paymentMethod === 'Mastercard' ? 'selected' : ''}>Mastercard</option>
+                            <option value="PayPal" ${booking.paymentMethod === 'PayPal' ? 'selected' : ''}>PayPal</option>
+                            <option value="Pay on Arrival" ${booking.paymentMethod === 'Pay on Arrival' ? 'selected' : ''}>Pay on Arrival</option>
+                        </select>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Save Changes',
+                confirmButtonColor: '#f59e0b',
+                cancelButtonColor: '#64748b',
+                background: '#1e293b',
+                color: '#fff',
+                preConfirm: () => {
+                    const travelDate = document.getElementById('editTravelDate').value;
+                    const qty = parseInt(document.getElementById('editQty').value);
+                    const pickupLocation = document.getElementById('editPickup').value;
+                    const vehicleType = document.getElementById('editVehicle').value;
+                    const guideType = document.getElementById('editGuide').value;
+                    const mealPlan = document.getElementById('editMeal').value;
+                    const hotelName = document.getElementById('editHotel').value;
+                    const paymentMethod = document.getElementById('editPayment').value;
+
+                    // Client-side Validation (Evaluation Criterion)
+                    if (!travelDate) {
+                        Swal.showValidationMessage('Please select a valid travel date!');
+                        return false;
+                    }
+                    if (!qty || qty <= 0) {
+                        Swal.showValidationMessage('Quantity must be at least 1 traveler!');
+                        return false;
+                    }
+                    const paymentStatus = (paymentMethod === 'Pay on Arrival' && booking.paymentStatus !== 'PAID') ? 'PENDING_ARRIVAL' : (booking.paymentStatus || 'PAID');
+                    const transactionId = booking.transactionId;
+                    return { travelDate, quantity: qty, pickupLocation, vehicleType, guideType, mealPlan, hotelName, paymentMethod, paymentStatus, transactionId };
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    // Send PUT API Request to Spring Boot Backend
+                    fetch(`http://localhost:8080/api/bookings/${booking.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(result.value)
+                    })
+                    .then(async response => {
+                        if (!response.ok) {
+                            const errText = await response.text();
+                            throw new Error(errText || 'Failed to update booking');
+                        }
+                        return response.json();
+                    })
+                    .then(updatedBooking => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Updated Successfully!',
+                            text: `Booking #${updatedBooking.id} has been modified. Total: Rs. ${updatedBooking.totalPrice}`,
+                            timer: 2000,
+                            showConfirmButton: false,
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
+                        fetchBookings(); // Refresh list dynamically
+                    })
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Update Failed',
+                            text: err.message,
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
+                    });
+                }
+            });
+        }
+
+        // 6. DELETE: Safe Delete / Cancel Booking
+        function deleteBookingConfirm(id) {
+            const booking = allBookings.find(b => b.id === id);
+            const placeName = (booking && booking.destination) ? booking.destination.name : 'this ticket';
+
+            Swal.fire({
+                title: 'Cancel Booking?',
+                text: `Are you sure you want to cancel your reservation for ${placeName} (#BK-${id})? This cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, Cancel Reservation',
+                cancelButtonText: 'Keep Booking',
+                background: '#1e293b',
+                color: '#fff'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    // Send DELETE API Request to Spring Boot Backend
+                    fetch(`http://localhost:8080/api/bookings/${id}`, {
+                        method: 'DELETE'
+                    })
+                    .then(async response => {
+                        if (!response.ok) {
+                            const errText = await response.text();
+                            throw new Error(errText || 'Failed to delete booking');
+                        }
+                        return response.text();
+                    })
+                    .then(msg => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Canceled!',
+                            text: msg || 'Booking has been successfully deleted.',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
+                        fetchBookings(); // Refresh list dynamically
+                    })
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Cancellation Failed',
+                            text: err.message,
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
+                    });
+                }
+            });
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = "index.html";
+        }
+
+        // Initialize on page load
+        window.onload = () => {
+            if (checkAuth()) {
+                fetchBookings();
+            }
+        };
+    </script>
+</body>
+</html>
