@@ -28,3 +28,12 @@ desktop.ini
 
 # Environment / local overrides
 *.env.local
+
+# Academic Reports, Evaluation Rubrics & Document Generators (Local Submission Only)
+*.docx
+*.pdf
+build_official_report.py
+generate_docx_report.py
+DOCUMENTATION_REPORT.md
+Mini_Project_Report_Guide.md
+Project_Report_Printable.html
