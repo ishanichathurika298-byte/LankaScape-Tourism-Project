@@ -35,6 +35,7 @@
                     <div class="auth-input-wrapper">
                         <i class="fa-solid fa-lock"></i>
                         <input type="password" id="password" placeholder="••••••••" required>
+                        <i class="fa-regular fa-eye-slash toggle-password" id="togglePassword" title="Show/Hide password"></i>
                     </div>
                 </div>
 
@@ -76,6 +77,20 @@
     </div>
 
     <script>
+        // Password Visibility Toggle (Show / Hide Password)
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                this.classList.toggle('fa-eye', isPassword);
+                this.classList.toggle('fa-eye-slash', !isPassword);
+                this.style.color = isPassword ? '#38bdf8' : '#94a3b8';
+            });
+        }
+
         // Session storage helper - only persists across browser restarts if "Remember for 30 days" is checked
         function saveUserSession(user, remember) {
             if (remember) {

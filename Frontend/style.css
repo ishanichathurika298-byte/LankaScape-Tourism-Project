@@ -1109,7 +1109,7 @@ body::before {
 }
 .auth-input-wrapper input {
     width: 100%;
-    padding: 12px 12px 12px 45px;
+    padding: 12px 45px 12px 45px;
     background-color: #1e293b;
     border: 1px solid #334155;
     border-radius: 8px;
@@ -1121,6 +1121,23 @@ body::before {
 .auth-input-wrapper input:focus {
     border-color: #38bdf8;
     box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px !important;
+    left: auto !important;
+    cursor: pointer;
+    color: #94a3b8 !important;
+    font-size: 15px;
+    padding: 6px;
+    transition: color 0.2s, transform 0.2s;
+    user-select: none;
+    z-index: 2;
+}
+.toggle-password:hover {
+    color: #38bdf8 !important;
+    transform: scale(1.1);
 }
 
 .auth-options {
