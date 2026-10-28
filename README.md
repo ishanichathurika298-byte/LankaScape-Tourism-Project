@@ -130,30 +130,68 @@ erDiagram
 
 ## 🚀 5. Setup & Execution Instructions
 
-### **Prerequisites**
-- Java Development Kit (JDK 17 or higher)
-- MySQL Server 8.0 (running locally on port 3306)
-- Web Browser (Google Chrome, Microsoft Edge, Mozilla Firefox)
+### **System Prerequisites**
+- **Java Development Kit (JDK 17 or higher)**
+- **MySQL Server 8.0** (running locally on default port 3306)
+- **Modern Web Browser** (Google Chrome, Microsoft Edge, Mozilla Firefox)
 
-### **Step 1: Database Verification**
-1. Ensure MySQL is running on port 3306.
-2. The database `tourism_db` is configured in `application.properties`:
+---
+
+### **Option A: 1-Click Launch (Windows - Recommended)**
+1. Ensure your local MySQL service is running on port 3306.
+2. In the root project folder, simply **double-click `RUN_PROJECT.bat`**.
+3. It will automatically:
+   - Auto-detect your JDK 17 environment.
+   - Start the Spring Boot REST API server on port 8080 in a dedicated console window.
+   - Launch `Frontend/index.html` in your default web browser.
+
+---
+
+### **Option B: Manual Step-by-Step Setup**
+
+#### **Step 1: Clone the Repository**
+```bash
+git clone https://github.com/ishanichathurika298-byte/LankaScape-Tourism-Project.git
+cd LankaScape-Tourism-Project
+```
+
+#### **Step 2: Database Setup (MySQL)**
+1. Open MySQL Workbench (or MySQL CLI) and run `Backend/database.sql`:
+   ```bash
+   mysql -u root -p < Backend/database.sql
+   ```
+   *(This creates `tourism_db` and pre-seeds all 60 Sri Lankan destinations with distance calculations from Colombo, categories, and sample package bookings).*
+2. Verify Database Credentials in `Backend/tourism-backend/src/main/resources/application.properties`:
    ```properties
    spring.datasource.url=jdbc:mysql://localhost:3306/tourism_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
    spring.datasource.username=root
    spring.datasource.password=Chathu#28
    ```
+   > 💡 *Note: If your local MySQL root password is not `Chathu#28`, simply update the `spring.datasource.password` line to match your MySQL password.*
 
-### **Step 2: Start Spring Boot Backend**
-1. Open PowerShell in `F:\Tourism Project\Backend\tourism-backend`:
-   ```powershell
-   $env:JAVA_HOME = "C:\Program Files\Java\jdk-17"
-   .\mvnw.cmd spring-boot:run
-   ```
-2. The server initializes on `http://localhost:8080`.
-3. Hibernate and `DataInitializer.java` automatically create all tables and verify destination data and schema columns.
+#### **Step 3: Start the Spring Boot Backend**
+Open a terminal in `Backend/tourism-backend` and execute:
+```bash
+# On Windows:
+.\mvnw.cmd spring-boot:run
 
-### **Step 3: Launch Frontend Application**
-1. Open `F:\Tourism Project\Frontend\index.html` in your web browser.
-2. Log in using the registered credentials or create a new user account via `register.html`.
-3. Explore destinations, click on any destination card to configure a complete tour package, test the interactive payment gateway (or use the 1-click Test Demo Card button), and manage your bookings in `my-bookings.html`!
+# On Linux / macOS:
+./mvnw spring-boot:run
+```
+The backend initializes REST API endpoints on `http://localhost:8080`.
+
+#### **Step 4: Launch Frontend**
+Open `Frontend/index.html` directly in your web browser, or serve it using any local static web server (e.g. VS Code Live Server).
+
+---
+
+### **🔑 Default Demonstration Accounts**
+- **Registered User Email:** `ishanichathurika298@gmail.com`
+- **Password:** `Chathu#28`
+*(Or click "Create Account" on `register.html` to register a new tourist account).*
+
+---
+
+### 💳 Testing the Payment Gateway
+When configuring any tour package on `destination-detail.html`, click **"Proceed to Secure Checkout"**.  
+In the payment modal, click the **"⚡ Autofill Test Card (1-Click Demo)"** button to instantly populate 3D Secure verified Visa credentials, or test PayPal / Pay on Arrival!
