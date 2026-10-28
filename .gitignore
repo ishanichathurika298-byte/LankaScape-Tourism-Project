@@ -21,5 +21,10 @@ target/
 Thumbs.db
 desktop.ini
 
+# Microsoft Office temporary lock files
+~$*.docx
+~$*.doc
+*.tmp
+
 # Environment / local overrides
 *.env.local
