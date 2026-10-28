@@ -517,10 +517,34 @@
         let allBookings = [];
         let loggedInUser = null;
 
+        // Helper function to safely get current logged-in user
+        function getLoggedInUser() {
+            const sessionStr = sessionStorage.getItem('loggedInUser');
+            if (sessionStr) {
+                try { return JSON.parse(sessionStr); } catch (e) {}
+            }
+            const localStr = localStorage.getItem('loggedInUser');
+            if (localStr) {
+                try {
+                    const parsed = JSON.parse(localStr);
+                    if (parsed && parsed._remember === true) {
+                        if (!parsed._rememberUntil || Date.now() < parsed._rememberUntil) {
+                            sessionStorage.setItem('loggedInUser', JSON.stringify(parsed));
+                            return parsed;
+                        }
+                    }
+                    localStorage.removeItem('loggedInUser');
+                } catch (e) {
+                    localStorage.removeItem('loggedInUser');
+                }
+            }
+            return null;
+        }
+
         // 1. Check Authentication & Update Navbar
         function checkAuth() {
-            const userString = localStorage.getItem('loggedInUser');
-            if (!userString) {
+            loggedInUser = getLoggedInUser();
+            if (!loggedInUser) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Authentication Required',
@@ -535,21 +559,23 @@
                 return false;
             }
 
-            loggedInUser = JSON.parse(userString);
             const firstLetter = loggedInUser.fullName ? loggedInUser.fullName.charAt(0).toUpperCase() : 'U';
 
-            document.getElementById('authNavSlot').outerHTML = `
-                <li class="profile-dropdown">
-                    <div class="profile-dropdown-btn">
-                        <div class="profile-icon">${firstLetter}</div>
-                        <span>${loggedInUser.fullName.split(' ')[0]}</span>
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="my-bookings.html">My Bookings</a>
-                        <a href="#" onclick="logout()" class="logout-btn">Logout</a>
-                    </div>
-                </li>
-            `;
+            const authSlot = document.getElementById('authNavSlot');
+            if (authSlot) {
+                authSlot.outerHTML = `
+                    <li class="profile-dropdown">
+                        <div class="profile-dropdown-btn">
+                            <div class="profile-icon">${firstLetter}</div>
+                            <span>${loggedInUser.fullName.split(' ')[0]}</span>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="my-bookings.html">My Bookings</a>
+                            <a href="#" onclick="logout()" class="logout-btn">Logout</a>
+                        </div>
+                    </li>
+                `;
+            }
             return true;
         }
 
@@ -1708,6 +1734,7 @@
 
         // Logout
         function logout() {
+            sessionStorage.removeItem('loggedInUser');
             localStorage.removeItem('loggedInUser');
             window.location.href = "index.html";
         }

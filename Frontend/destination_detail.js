@@ -7,33 +7,58 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDestinationDetails();
 });
 
+// Helper function to safely get current logged-in user
+function getLoggedInUser() {
+    const sessionStr = sessionStorage.getItem('loggedInUser');
+    if (sessionStr) {
+        try { return JSON.parse(sessionStr); } catch (e) {}
+    }
+    const localStr = localStorage.getItem('loggedInUser');
+    if (localStr) {
+        try {
+            const parsed = JSON.parse(localStr);
+            if (parsed && parsed._remember === true) {
+                if (!parsed._rememberUntil || Date.now() < parsed._rememberUntil) {
+                    sessionStorage.setItem('loggedInUser', JSON.stringify(parsed));
+                    return parsed;
+                }
+            }
+            localStorage.removeItem('loggedInUser');
+        } catch (e) {
+            localStorage.removeItem('loggedInUser');
+        }
+    }
+    return null;
+}
+
 // Setup auth state in navbar
 function initAuthNav() {
     const authNavItem = document.getElementById('auth-nav-item');
-    const userString = localStorage.getItem('loggedInUser');
+    const user = getLoggedInUser();
 
-    if (userString && authNavItem) {
-        try {
-            const user = JSON.parse(userString);
-            authNavItem.innerHTML = `
-                <div class="profile-dropdown">
-                    <div class="profile-dropdown-btn">
-                        <div class="profile-icon">${user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}</div>
-                        <span>${user.fullName ? user.fullName.split(' ')[0] : 'User'}</span>
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="my-bookings.html"><i class="fa-solid fa-ticket"></i> My Bookings</a>
-                        <a href="#" onclick="logoutUser()" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
-                    </div>
+    if (user && authNavItem) {
+        authNavItem.innerHTML = `
+            <div class="profile-dropdown">
+                <div class="profile-dropdown-btn">
+                    <div class="profile-icon">${user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}</div>
+                    <span>${user.fullName ? user.fullName.split(' ')[0] : 'User'}</span>
                 </div>
-            `;
-        } catch (e) {
-            console.error('Error parsing user JSON', e);
-        }
+                <div class="dropdown-content">
+                    <a href="my-bookings.html"><i class="fa-solid fa-ticket"></i> My Bookings</a>
+                    <a href="#" onclick="logoutUser()" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                </div>
+            </div>
+        `;
+    } else if (authNavItem) {
+        authNavItem.innerHTML = `
+            <a href="login.html" class="nav-btn-login">Sign in</a>
+            <a href="register.html" class="nav-btn-register">Register</a>
+        `;
     }
 }
 
 function logoutUser() {
+    sessionStorage.removeItem('loggedInUser');
     localStorage.removeItem('loggedInUser');
     window.location.reload();
 }
@@ -294,8 +319,8 @@ function handleFormSubmit(event) {
     if (!currentDestination) return;
 
     // 1. Check Login
-    const userString = localStorage.getItem('loggedInUser');
-    if (!userString) {
+    const user = getLoggedInUser();
+    if (!user) {
         Swal.fire({
             icon: 'warning',
             title: 'Login Required',
@@ -310,8 +335,6 @@ function handleFormSubmit(event) {
         });
         return;
     }
-
-    const user = JSON.parse(userString);
     const travelDate = document.getElementById('bookTravelDate').value;
     const pickupLocation = document.getElementById('bookPickupLocation').value;
     const qty = parseInt(document.getElementById('bookTicketQty').value, 10) || 1;

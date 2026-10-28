@@ -178,10 +178,39 @@ function applyDestFilters() {
     });
 }
 
+// Helper function to safely get current logged-in user
+// Prioritizes active session; checks localStorage ONLY if "Remember for 30 days" was explicitly selected
+function getLoggedInUser() {
+    // 1. Session Storage (active browser session)
+    const sessionStr = sessionStorage.getItem('loggedInUser');
+    if (sessionStr) {
+        try { return JSON.parse(sessionStr); } catch (e) {}
+    }
+
+    // 2. Local Storage (only valid if marked with _remember and within 30 days)
+    const localStr = localStorage.getItem('loggedInUser');
+    if (localStr) {
+        try {
+            const parsed = JSON.parse(localStr);
+            if (parsed && parsed._remember === true) {
+                if (!parsed._rememberUntil || Date.now() < parsed._rememberUntil) {
+                    sessionStorage.setItem('loggedInUser', JSON.stringify(parsed));
+                    return parsed;
+                }
+            }
+            // Auto-clean stale or non-remembered session so leaving the browser signs out
+            localStorage.removeItem('loggedInUser');
+        } catch (e) {
+            localStorage.removeItem('loggedInUser');
+        }
+    }
+    return null;
+}
+
 // Book Now බටන් එක එබුවම වැඩ කරන ෆන්ක්ෂන් එක
 function bookTicket(destinationId, placeName) {
-    const userString = localStorage.getItem('loggedInUser');
-    if (!userString) {
+    const user = getLoggedInUser();
+    if (!user) {
         Swal.fire({
             icon: 'warning',
             title: 'Please Login',
@@ -192,8 +221,6 @@ function bookTicket(destinationId, placeName) {
         });
         return;
     }
-
-    const user = JSON.parse(userString);
 
     // SweetAlert2 custom HTML form
     Swal.fire({
@@ -315,13 +342,15 @@ function bookTicket(destinationId, placeName) {
 
 // මෙනු එක (Navbar) වෙනස් කරන ෆන්ක්ෂන් එක
 function updateNavbar() {
-    const userString = localStorage.getItem('loggedInUser');
+    const user = getLoggedInUser();
     const navLinks = document.querySelector('.nav-links');
     
-    if (userString && navLinks) {
-        const user = JSON.parse(userString);
+    if (!navLinks) return;
+
+    if (user) {
         // නමේ මුල් අකුර ගන්නවා Profile Icon එකට
-        const firstLetter = user.fullName.charAt(0).toUpperCase();
+        const firstLetter = user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U';
+        const displayName = user.fullName ? user.fullName.split(' ')[0] : 'User';
         
         navLinks.innerHTML = `
             <li><a href="index.html">Home</a></li>
@@ -330,18 +359,29 @@ function updateNavbar() {
             <li class="profile-dropdown">
                 <div class="profile-dropdown-btn">
                     <div class="profile-icon">${firstLetter}</div>
-                    <span>${user.fullName.split(' ')[0]}</span>
+                    <span>${displayName}</span>
                 </div>
                 <div class="dropdown-content">
-                    <a href="my-bookings.html">My Tickets</a>
-                    <a href="#" onclick="logout()" class="logout-btn">Logout</a>
+                    <a href="my-bookings.html"><i class="fa-solid fa-ticket"></i> My Tickets</a>
+                    <a href="#" onclick="logout()" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
                 </div>
             </li>
+        `;
+    } else {
+        // Guest user state: Shows standard Login / Register buttons
+        navLinks.innerHTML = `
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#destinations">Destinations</a></li>
+            <li><a href="#categories">Categories</a></li>
+            <li><a href="#seasons">Seasons</a></li>
+            <li><a href="login.html" class="btn-login">Login / Register</a></li>
         `;
     }
 }
 
 function logout() {
+    // Clear both session and local storage
+    sessionStorage.removeItem('loggedInUser');
     localStorage.removeItem('loggedInUser');
     window.location.href = "index.html";
 }

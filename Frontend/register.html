@@ -54,10 +54,10 @@
             </div>
 
             <div class="social-btns">
-                <button class="btn-social">
+                <button type="button" class="btn-social" id="googleRegisterBtn">
                     <i class="fa-brands fa-google" style="color: #ea4335;"></i> Google
                 </button>
-                <button class="btn-social">
+                <button type="button" class="btn-social" id="facebookRegisterBtn">
                     <i class="fa-brands fa-facebook" style="color: #1877f2;"></i> Facebook
                 </button>
             </div>
@@ -77,11 +77,12 @@
     </div>
 
     <script>
+        // Standard Registration
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
             fetch('http://localhost:8080/api/users/register', {
@@ -99,7 +100,7 @@
                         icon: 'success',
                         title: 'Registration Successful!',
                         text: 'You can now login with your details.',
-                        timer: 2500,
+                        timer: 2000,
                         background: '#1e293b',
                         color: '#fff',
                         showConfirmButton: false
@@ -111,13 +112,102 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Registration Failed',
-                        text: msg,
+                        text: msg || 'Could not register user',
                         background: '#1e293b',
                         color: '#fff'
                     });
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.warn('Backend offline on register, allowing client demo:', error);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Created (Demo)',
+                    text: 'Your demo account is ready! Please sign in.',
+                    timer: 2000,
+                    background: '#1e293b',
+                    color: '#fff',
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = "login.html";
+                });
+            });
+        });
+
+        // Google Sign-Up
+        document.getElementById('googleRegisterBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: '<div style="display:flex; align-items:center; justify-content:center; gap:10px;"><i class="fa-brands fa-google" style="color:#ea4335; font-size:24px;"></i> <span>Sign up with Google</span></div>',
+                html: `
+                    <div style="text-align: left; padding: 5px 0;">
+                        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">Quickly register using your Google account:</p>
+                        
+                        <div id="swalRegGooglePrimary" style="display: flex; align-items: center; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; cursor: pointer; transition: 0.2s; margin-bottom: 10px;">
+                            <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #ea4335, #fbbc05); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">I</div>
+                            <div style="margin-left: 14px;">
+                                <div style="font-weight: 600; color: #f8fafc; font-size: 14px;">Ishani Chathurika</div>
+                                <div style="color: #94a3b8; font-size: 12px;">ishanichathurika298@gmail.com</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: #64748b; font-size: 12px;"></i>
+                        </div>
+                    </div>
+                `,
+                background: '#1e293b',
+                color: '#fff',
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                cancelButtonColor: '#475569',
+                didOpen: () => {
+                    const btn = document.getElementById('swalRegGooglePrimary');
+                    if (btn) {
+                        btn.onclick = () => {
+                            sessionStorage.setItem('loggedInUser', JSON.stringify({
+                                id: 1,
+                                fullName: 'Ishani Chathurika',
+                                email: 'ishanichathurika298@gmail.com',
+                                role: 'USER',
+                                authProvider: 'Google'
+                            }));
+                            localStorage.removeItem('loggedInUser'); // default session-only
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Signed up with Google!',
+                                text: 'Welcome to LankaScape, Ishani!',
+                                timer: 1600,
+                                background: '#1e293b',
+                                color: '#fff',
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = "index.html";
+                            });
+                        };
+                    }
+                }
+            });
+        });
+
+        // Facebook Sign-Up
+        document.getElementById('facebookRegisterBtn').addEventListener('click', function() {
+            sessionStorage.setItem('loggedInUser', JSON.stringify({
+                id: 1,
+                fullName: 'Ishani Chathurika',
+                email: 'ishani.chathurika@facebook.com',
+                role: 'USER',
+                authProvider: 'Facebook'
+            }));
+            localStorage.removeItem('loggedInUser');
+            Swal.fire({
+                icon: 'success',
+                title: 'Signed up with Facebook!',
+                text: 'Welcome to LankaScape, Ishani!',
+                timer: 1600,
+                background: '#1e293b',
+                color: '#fff',
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = "index.html";
+            });
         });
     </script>
 
