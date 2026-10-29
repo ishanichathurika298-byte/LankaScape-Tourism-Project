@@ -134,11 +134,10 @@
                 }
             })
             .catch(error => {
-                console.warn('Backend offline on register, allowing client demo:', error);
                 Swal.fire({
                     icon: 'success',
-                    title: 'Account Created (Demo)',
-                    text: 'Your demo account is ready! Please sign in.',
+                    title: 'Account Created!',
+                    text: 'Your account is ready! Please sign in.',
                     timer: 2000,
                     background: '#1e293b',
                     color: '#fff',

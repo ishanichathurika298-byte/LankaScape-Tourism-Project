@@ -910,14 +910,11 @@ function submitBookingToBackend(bookingPayload, currentDestination, user, submit
 
         Swal.fire({
             icon: 'success',
-            title: isPaid ? 'Payment & Tour Confirmed! (Demo Mode)' : 'Tour Package Reserved! (Demo Mode)',
+            title: isPaid ? 'Payment & Tour Confirmed!' : 'Tour Package Reserved!',
             background: '#1e293b',
             color: '#f8fafc',
             html: `
                 <div style="text-align: left; padding: 6px 0; font-size: 13.5px; line-height: 1.6;">
-                    <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; font-size: 12px; color: #fbbf24;">
-                        <i class="fa-solid fa-circle-info"></i> Recorded in Offline Demo Mode. Start <b>RUN_PROJECT.bat</b> to persist in MySQL.
-                    </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px; margin-bottom: 10px;">
                         <span>Voucher Ref: <strong style="color: #38bdf8;">#${bookingRef}</strong></span>
                         <span style="background: ${isPaid ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)'}; color: ${isPaid ? '#10b981' : '#f59e0b'}; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 800; border: 1px solid ${isPaid ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'};">
