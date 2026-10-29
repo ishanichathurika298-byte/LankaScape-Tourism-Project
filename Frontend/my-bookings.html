@@ -513,6 +513,7 @@
     </footer>
 
     <!-- Full CRUD Logic & Scripts -->
+    <script src="destinations-data.js"></script>
     <script>
         let allBookings = [];
         let loggedInUser = null;
@@ -594,15 +595,38 @@
                     applyFilterAndSort();
                 })
                 .catch(err => {
-                    console.error(err);
-                    document.getElementById('bookingsContainer').innerHTML = `
-                        <div class="empty-state" style="grid-column: 1 / -1;">
-                            <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
-                            <h3>Unable to Load Bookings</h3>
-                            <p>Make sure the backend server is running and try refreshing.</p>
-                            <button onclick="fetchBookings()" class="btn-primary">Try Again</button>
-                        </div>
-                    `;
+                    console.warn("Backend offline, loading local demo bookings:", err);
+                    const localList = JSON.parse(localStorage.getItem('localDemoBookings') || '[]');
+                    if (localList.length > 0) {
+                        allBookings = localList;
+                    } else {
+                        // Sample booking for demonstration in offline mode
+                        allBookings = [{
+                            id: 51,
+                            bookingDate: new Date().toISOString().split('T')[0],
+                            travelDate: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0],
+                            quantity: 2,
+                            totalPrice: 75000,
+                            paymentStatus: 'PAID',
+                            paymentMethod: 'Visa',
+                            transactionId: 'TXN-LS-MVQY8SNC-GQZL4D',
+                            pickupLocation: 'Colombo City Hotel (Hilton / Cinnamon)',
+                            vehicleType: 'Private AC Sedan (1-3 Pax)',
+                            guideType: 'SLTDA Licensed English Guide',
+                            mealPlan: 'Full Board All-Inclusive',
+                            hotelName: '4-Star Deluxe Resort (Jetwing / Cinnamon)',
+                            destination: {
+                                id: 51,
+                                name: 'Sigiriya Lion Rock Fortress',
+                                category: 'HERITAGE',
+                                location: 'Cultural Triangle',
+                                ticketPrice: 5000,
+                                imageUrl: 'Gemini_Generated_Image_bj9v1kbj9v1kbj9v.jpg'
+                            }
+                        }];
+                    }
+                    updateStats();
+                    applyFilterAndSort();
                 });
         }
 

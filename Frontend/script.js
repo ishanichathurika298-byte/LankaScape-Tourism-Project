@@ -3,20 +3,57 @@ console.log("Sri Lanka Tourism E-Ticketing System Website is working!");
 // Global destinations store
 let allDestinations = [];
 let selectedCategory = 'ALL';
+let isBackendLive = false;
 
 // Backend එකෙන් දත්ත (Destinations) අරගෙන පෙන්නන ෆන්ක්ෂන් එක (A to Z Order)
+// Backend Offline නම් ස්වයංක්‍රීයව Full 60 Catalog Offline Preview Mode එක Load වේ
 function loadDestinations() {
+    const statusBanner = document.getElementById('backendStatusBanner');
+
     fetch('http://localhost:8080/api/destinations')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
         .then(data => {
-            allDestinations = data;
-            applyDestFilters();
+            if (Array.isArray(data) && data.length > 0) {
+                allDestinations = data;
+                isBackendLive = true;
+                if (statusBanner) {
+                    statusBanner.style.display = 'none';
+                }
+                applyDestFilters();
+                return;
+            }
+            throw new Error('Empty data from backend');
         })
         .catch(error => {
-            console.error('Error fetching destinations:', error);
-            const container = document.getElementById('destinations-container');
-            if (container) {
-                container.innerHTML = '<p style="color: #ef4444; padding: 20px;">Failed to load destinations from database. Please verify backend is running on port 8080.</p>';
+            console.warn('Backend server offline on port 8080. Activating offline preview mode with full catalog:', error);
+            isBackendLive = false;
+            
+            // Seamless Fallback: Load full 60 destinations from local catalog!
+            if (typeof FALLBACK_DESTINATIONS !== 'undefined' && Array.isArray(FALLBACK_DESTINATIONS) && FALLBACK_DESTINATIONS.length > 0) {
+                allDestinations = FALLBACK_DESTINATIONS;
+            } else {
+                allDestinations = [];
+            }
+            
+            applyDestFilters();
+
+            // Display informative, helpful banner
+            if (statusBanner) {
+                statusBanner.style.display = 'block';
+                statusBanner.innerHTML = `
+                    <div style="background: rgba(234, 88, 12, 0.12); border: 1px solid rgba(249, 115, 22, 0.4); border-radius: 10px; padding: 12px 18px; margin: 15px 0 25px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 13px; color: #fdba74;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-server" style="color: #fb923c; font-size: 16px;"></i>
+                            <span><b>Viewing in Offline Preview Mode:</b> Spring Boot Backend is currently not running on port 8080. Showing all 60 destinations in demo mode. To connect to live MySQL database, run <b>RUN_PROJECT.bat</b>.</span>
+                        </div>
+                        <button onclick="loadDestinations()" style="background: #f97316; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;">
+                            <i class="fa-solid fa-rotate"></i> Retry Connection
+                        </button>
+                    </div>
+                `;
             }
         });
 }

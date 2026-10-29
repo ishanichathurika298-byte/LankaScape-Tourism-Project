@@ -93,7 +93,7 @@ function loadDestinationDetails() {
     fetch(`http://localhost:8080/api/destinations/${destId}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Destination not found');
+                throw new Error('Destination not found on server');
             }
             return response.json();
         })
@@ -102,11 +102,19 @@ function loadDestinationDetails() {
             renderDestinationDetails(data);
         })
         .catch(err => {
-            console.error('Error loading destination:', err);
+            console.warn('Backend unavailable, checking fallback destination catalog:', err);
+            if (typeof FALLBACK_DESTINATIONS !== 'undefined' && Array.isArray(FALLBACK_DESTINATIONS)) {
+                const found = FALLBACK_DESTINATIONS.find(d => String(d.id) === String(destId));
+                if (found) {
+                    currentDestination = found;
+                    renderDestinationDetails(found);
+                    return;
+                }
+            }
             Swal.fire({
                 icon: 'error',
                 title: 'Destination Not Found',
-                text: 'We could not find the requested destination in the database.',
+                text: 'We could not find the requested destination in the catalog.',
                 confirmButtonText: 'Back to Destinations'
             }).then(() => {
                 window.location.href = 'index.html#destinations';
@@ -870,13 +878,83 @@ function submitBookingToBackend(bookingPayload, currentDestination, user, submit
         });
     })
     .catch(error => {
-        console.error('Booking failed:', error);
+        console.warn('Backend server offline, falling back to local demo booking:', error);
+        // Fallback: create mock saved booking locally so the user can still see the complete voucher and QR code!
+        const mockId = Math.floor(1000 + Math.random() * 9000);
+        const savedBooking = {
+            id: mockId,
+            ...bookingPayload,
+            totalPrice: bookingPayload.totalPrice || 25000,
+            paymentStatus: bookingPayload.paymentStatus || 'PAID',
+            travelDate: bookingPayload.travelDate || new Date().toISOString().split('T')[0]
+        };
+
+        // Store in local storage for my-bookings
+        try {
+            const localList = JSON.parse(localStorage.getItem('localDemoBookings') || '[]');
+            localList.unshift({
+                ...savedBooking,
+                destination: currentDestination
+            });
+            localStorage.setItem('localDemoBookings', JSON.stringify(localList));
+        } catch(e) {}
+
+        const grandTotal = savedBooking.totalPrice;
+        const usdTotal = Math.round(grandTotal / 305);
+        const bookingRef = `BK-2026-${String(savedBooking.id).padStart(4, '0')}`;
+        const isPaid = (savedBooking.paymentStatus === 'PAID');
+        const txnId = savedBooking.transactionId || (isPaid ? 'ONLINE-CARD-DEMO' : 'POA-CHAUFFEUR');
+
+        const qrPayload = `https://lankascape.lk/verify?ref=${bookingRef}&pax=${encodeURIComponent(user.fullName)}&dest=${encodeURIComponent(currentDestination.name)}&date=${savedBooking.travelDate}&total=${savedBooking.totalPrice}&pay=${savedBooking.paymentStatus}&txn=${txnId}`;
+        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrPayload)}`;
+
         Swal.fire({
-            icon: 'error',
-            title: 'Booking Failed',
-            text: 'Could not complete your booking request. Please ensure the backend is running and try again.',
+            icon: 'success',
+            title: isPaid ? 'Payment & Tour Confirmed! (Demo Mode)' : 'Tour Package Reserved! (Demo Mode)',
             background: '#1e293b',
-            color: '#fff'
+            color: '#f8fafc',
+            html: `
+                <div style="text-align: left; padding: 6px 0; font-size: 13.5px; line-height: 1.6;">
+                    <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; font-size: 12px; color: #fbbf24;">
+                        <i class="fa-solid fa-circle-info"></i> Recorded in Offline Demo Mode. Start <b>RUN_PROJECT.bat</b> to persist in MySQL.
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px; margin-bottom: 10px;">
+                        <span>Voucher Ref: <strong style="color: #38bdf8;">#${bookingRef}</strong></span>
+                        <span style="background: ${isPaid ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)'}; color: ${isPaid ? '#10b981' : '#f59e0b'}; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 800; border: 1px solid ${isPaid ? 'rgba(16, 185, 129, 0.4)' : 'rgba(245, 158, 11, 0.4)'};">
+                            <i class="fa-solid ${isPaid ? 'fa-circle-check' : 'fa-clock'}"></i> ${isPaid ? 'PAID IN FULL' : 'PAY ON ARRIVAL'}
+                        </span>
+                    </div>
+
+                    <div style="background: #0f172a; padding: 8px 12px; border-radius: 8px; margin-bottom: 10px; font-size: 12px; display: flex; justify-content: space-between; font-family: monospace;">
+                        <span style="color: #94a3b8;">TRANSACTION REF:</span>
+                        <strong style="color: #38bdf8;">${txnId}</strong>
+                    </div>
+
+                    <div style="text-align: center; margin: 12px 0;">
+                        <img src="${qrCodeUrl}" alt="Booking QR Code" style="width: 140px; height: 140px; border-radius: 8px; border: 2px solid #38bdf8; background: white; padding: 4px;">
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">
+                            <i class="fa-solid fa-qrcode"></i> Dynamic Scannable Verification QR
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 8px; font-size: 12.5px;">
+                        <div><strong>Destination:</strong> ${currentDestination.name}</div>
+                        <div><strong>Travel Date:</strong> ${savedBooking.travelDate}</div>
+                        <div><strong>Total Amount:</strong> LKR ${Number(grandTotal).toLocaleString()} (approx $${usdTotal} USD)</div>
+                    </div>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fa-solid fa-print"></i> Print Official A4 Voucher',
+            cancelButtonText: 'Go to My Bookings',
+            confirmButtonColor: '#e07a27',
+            cancelButtonColor: '#0284c7'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                printTourVoucherDirect(savedBooking, currentDestination, user, qrCodeUrl, bookingRef);
+            } else {
+                window.location.href = 'my-bookings.html';
+            }
         });
     })
     .finally(() => {
