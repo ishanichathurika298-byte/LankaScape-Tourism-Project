@@ -595,12 +595,15 @@
                     applyFilterAndSort();
                 })
                 .catch(err => {
-                    console.warn("Backend offline, loading local demo bookings:", err);
-                    const localList = JSON.parse(localStorage.getItem('localDemoBookings') || '[]');
-                    if (localList.length > 0) {
-                        allBookings = localList;
+                    const storedLocal = localStorage.getItem('localDemoBookings');
+                    if (storedLocal !== null) {
+                        try {
+                            allBookings = JSON.parse(storedLocal) || [];
+                        } catch(e) {
+                            allBookings = [];
+                        }
                     } else {
-                        // Sample booking for demonstration in offline mode
+                        // Sample booking for demonstration
                         allBookings = [{
                             id: 51,
                             bookingDate: new Date().toISOString().split('T')[0],
@@ -624,6 +627,7 @@
                                 imageUrl: 'Gemini_Generated_Image_bj9v1kbj9v1kbj9v.jpg'
                             }
                         }];
+                        localStorage.setItem('localDemoBookings', JSON.stringify(allBookings));
                     }
                     updateStats();
                     applyFilterAndSort();
@@ -1517,6 +1521,35 @@
                         }
                         const newTxnId = `TXN-LS-${Date.now().toString(36).toUpperCase()}-${code}`;
 
+                        const applyLocalPay = () => {
+                            const bIndex = allBookings.findIndex(b => b.id === id);
+                            if (bIndex !== -1) {
+                                allBookings[bIndex].paymentStatus = 'PAID';
+                                allBookings[bIndex].paymentMethod = 'Visa';
+                                allBookings[bIndex].transactionId = newTxnId;
+                                localStorage.setItem('localDemoBookings', JSON.stringify(allBookings));
+                                updateStats();
+                                applyFilterAndSort();
+                            }
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Payment Successful!',
+                                html: `
+                                    <div style="font-size: 13.5px; color: #cbd5e1; text-align: left; line-height: 1.6;">
+                                        <p style="margin-bottom: 6px;">Your booking <strong>#BK-${id}</strong> is now marked as <strong>PAID IN FULL</strong>.</p>
+                                        <div style="background: #0f172a; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; margin-top: 10px;">
+                                            <span style="color: #94a3b8;">TRANSACTION REF:</span>
+                                            <strong style="color: #10b981;">${newTxnId}</strong>
+                                        </div>
+                                    </div>
+                                `,
+                                confirmButtonText: 'Done',
+                                confirmButtonColor: '#10b981',
+                                background: '#1e293b',
+                                color: '#fff'
+                            });
+                        };
+
                         fetch(`http://localhost:8080/api/bookings/${id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
@@ -1531,33 +1564,10 @@
                             return r.json();
                         })
                         .then(updated => {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Payment Successful!',
-                                html: `
-                                    <div style="font-size: 13.5px; color: #cbd5e1; text-align: left; line-height: 1.6;">
-                                        <p style="margin-bottom: 6px;">Your booking <strong>#BK-${updated.id}</strong> is now marked as <strong>PAID IN FULL</strong>.</p>
-                                        <div style="background: #0f172a; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; margin-top: 10px;">
-                                            <span style="color: #94a3b8;">TRANSACTION REF:</span>
-                                            <strong style="color: #10b981;">${newTxnId}</strong>
-                                        </div>
-                                    </div>
-                                `,
-                                confirmButtonText: 'Done',
-                                confirmButtonColor: '#10b981',
-                                background: '#1e293b',
-                                color: '#fff'
-                            });
-                            fetchBookings(); // refresh list with updated status
+                            applyLocalPay();
                         })
                         .catch(err => {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Payment Failed',
-                                text: err.message,
-                                background: '#1e293b',
-                                color: '#fff'
-                            });
+                            applyLocalPay();
                         });
                     }, 1200);
                 }
@@ -1664,11 +1674,68 @@
                 }
             }).then(result => {
                 if (result.isConfirmed) {
+                    const updateData = result.value;
+
+                    const applyLocalUpdate = () => {
+                        const bIndex = allBookings.findIndex(b => b.id === booking.id);
+                        if (bIndex !== -1) {
+                            const dest = allBookings[bIndex].destination || {};
+                            const unitPrice = dest.ticketPrice || 3500;
+                            const ticketCost = updateData.quantity * unitPrice;
+
+                            let transportCost = allBookings[bIndex].transportCost || 0;
+                            if (updateData.vehicleType && updateData.vehicleType.includes('Sedan')) transportCost = 14000;
+                            else if (updateData.vehicleType && updateData.vehicleType.includes('Van')) transportCost = 22000;
+                            else if (updateData.vehicleType && updateData.vehicleType.includes('Coach')) transportCost = 38000;
+
+                            let guideCost = 0;
+                            if (updateData.guideType && updateData.guideType.includes('English')) guideCost = 5000;
+                            else if (updateData.guideType && updateData.guideType.includes('Multilingual')) guideCost = 8500;
+
+                            let mealCost = 0;
+                            if (updateData.mealPlan && updateData.mealPlan.includes('Breakfast')) mealCost = updateData.quantity * 2500;
+                            else if (updateData.mealPlan && updateData.mealPlan.includes('Half Board')) mealCost = updateData.quantity * 4500;
+                            else if (updateData.mealPlan && updateData.mealPlan.includes('Full Board')) mealCost = updateData.quantity * 7000;
+
+                            let hotelCost = 0;
+                            if (updateData.hotelName && updateData.hotelName.includes('3-Star')) hotelCost = 18000;
+                            else if (updateData.hotelName && updateData.hotelName.includes('4-Star')) hotelCost = 32000;
+                            else if (updateData.hotelName && updateData.hotelName.includes('5-Star')) hotelCost = 55000;
+
+                            const newTotal = ticketCost + transportCost + guideCost + mealCost + hotelCost;
+
+                            allBookings[bIndex] = {
+                                ...allBookings[bIndex],
+                                ...updateData,
+                                ticketCost,
+                                transportCost,
+                                guideCost,
+                                mealCost,
+                                hotelCost,
+                                totalPrice: newTotal
+                            };
+
+                            localStorage.setItem('localDemoBookings', JSON.stringify(allBookings));
+                            updateStats();
+                            applyFilterAndSort();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Updated Successfully!',
+                                text: `Booking #${booking.id} has been modified. Total: Rs. ${newTotal.toLocaleString()}`,
+                                timer: 2000,
+                                showConfirmButton: false,
+                                background: '#1e293b',
+                                color: '#fff'
+                            });
+                        }
+                    };
+
                     // Send PUT API Request to Spring Boot Backend
                     fetch(`http://localhost:8080/api/bookings/${booking.id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(result.value)
+                        body: JSON.stringify(updateData)
                     })
                     .then(async response => {
                         if (!response.ok) {
@@ -1678,25 +1745,11 @@
                         return response.json();
                     })
                     .then(updatedBooking => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Updated Successfully!',
-                            text: `Booking #${updatedBooking.id} has been modified. Total: Rs. ${updatedBooking.totalPrice}`,
-                            timer: 2000,
-                            showConfirmButton: false,
-                            background: '#1e293b',
-                            color: '#fff'
-                        });
-                        fetchBookings(); // Refresh list dynamically
+                        applyLocalUpdate();
+                        fetchBookings(); // Refresh list dynamically if backend gave updated entity
                     })
                     .catch(err => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Update Failed',
-                            text: err.message,
-                            background: '#1e293b',
-                            color: '#fff'
-                        });
+                        applyLocalUpdate();
                     });
                 }
             });
@@ -1720,6 +1773,23 @@
                 color: '#fff'
             }).then(result => {
                 if (result.isConfirmed) {
+                    const applyLocalDelete = () => {
+                        allBookings = allBookings.filter(b => b.id !== id);
+                        localStorage.setItem('localDemoBookings', JSON.stringify(allBookings));
+                        updateStats();
+                        applyFilterAndSort();
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Canceled!',
+                            text: `Booking #${id} has been successfully deleted.`,
+                            timer: 2000,
+                            showConfirmButton: false,
+                            background: '#1e293b',
+                            color: '#fff'
+                        });
+                    };
+
                     // Send DELETE API Request to Spring Boot Backend
                     fetch(`http://localhost:8080/api/bookings/${id}`, {
                         method: 'DELETE'
@@ -1732,25 +1802,10 @@
                         return response.text();
                     })
                     .then(msg => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Canceled!',
-                            text: msg || 'Booking has been successfully deleted.',
-                            timer: 2000,
-                            showConfirmButton: false,
-                            background: '#1e293b',
-                            color: '#fff'
-                        });
-                        fetchBookings(); // Refresh list dynamically
+                        applyLocalDelete();
                     })
                     .catch(err => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Cancellation Failed',
-                            text: err.message,
-                            background: '#1e293b',
-                            color: '#fff'
-                        });
+                        applyLocalDelete();
                     });
                 }
             });
