@@ -6,8 +6,8 @@ echo         LANKASCAPE - SRI LANKA TOURISM SYSTEM
 echo ========================================================
 echo.
 
-:: Auto-detect or set JAVA_HOME if missing
-if not defined JAVA_HOME (
+:: Auto-detect or set JAVA_HOME if missing or invalid
+if not exist "%JAVA_HOME%\bin\java.exe" (
     if exist "C:\Program Files\Java\jdk-17" (
         set "JAVA_HOME=C:\Program Files\Java\jdk-17"
     )
