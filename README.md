@@ -461,6 +461,11 @@ The REST API server will initialize on **`http://localhost:8080`**.
 Simply open **`Frontend/index.html`** in any modern web browser, or launch it with the **VS Code Live Server** extension.
 
 ---
+### Option C: Live Cloud Deployment (No Local Setup Required)
+
+To ensure global accessibility without requiring any local database or server setup, the presentation layer (Frontend) of the LankaScape platform has been successfully deployed to the cloud via Netlify. You can access the live application directly using the link below:
+
+* **Public Live URL:** [https://lankascape-tours.netlify.app](https://lankascape-tours.netlify.app)
 
 ### Demonstration Accounts
 
