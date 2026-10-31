@@ -1,4 +1,4 @@
-# 🌴 LankaScape: Sri Lanka Tourism E-Ticketing & Integrated Destination Information System
+# LankaScape: Sri Lanka Tourism E-Ticketing & Integrated Destination Information System
 
 <p align="center">
   <img src="Frontend/logo.jpg" alt="LankaScape Logo" width="120" style="border-radius: 50%;" />
@@ -23,7 +23,7 @@
 
 ---
 
-## 📖 1. Project Overview & Commercial Domain
+## 1. Project Overview & Commercial Domain
 
 **LankaScape** is an enterprise-grade, full-stack web application engineered to modernize destination discovery and electronic ticketing (E-Ticketing) across Sri Lanka. Developed for module **EE4207 (Web Application Development)** at the **Faculty of Engineering, University of Ruhuna**, LankaScape bridges the gap between Sri Lanka's world-renowned cultural, ecological, and coastal heritage and the modern digital expectations of travelers worldwide.
 
@@ -46,7 +46,7 @@ Rather than serving as a static brochure, LankaScape functions as an active digi
 
 ---
 
-## 🏛️ 2. Architectural Philosophy & Core System Boundaries
+## 2. Architectural Philosophy & Core System Boundaries
 
 LankaScape is structured on a strict **decoupled 3-tier client-server architecture**, ensuring modularity, security, and separation of concerns:
 
@@ -87,7 +87,7 @@ LankaScape is structured on a strict **decoupled 3-tier client-server architectu
 
 ---
 
-## 🗄️ 3. Database Design & Relational Schema Architecture
+## 3. Database Design & Relational Schema Architecture
 
 ### 3.1 3NF Normalization Strategy & Entity-Relationship Architecture
 The `tourism_db` database runs on **MySQL 8.0 (InnoDB engine)** with strict primary keys and foreign key constraints. The schema is normalized to **Third Normal Form (3NF)**:
@@ -141,7 +141,7 @@ The `tourism_db` database runs on **MySQL 8.0 (InnoDB engine)** with strict prim
 
 ---
 
-### 🌐 Interactive Mermaid Entity-Relationship Model
+### Interactive Mermaid Entity-Relationship Model
 
 ```mermaid
 erDiagram
@@ -241,7 +241,7 @@ erDiagram
 
 ---
 
-### 📋 3.2 Relational Database Schema Data Dictionary
+### 3.2 Relational Database Schema Data Dictionary
 
 #### **Table 1: `users` Table**
 | Column Name | Data Type | Constraints | Description |
@@ -301,7 +301,7 @@ erDiagram
 
 ---
 
-## ⚡ 4. Full-Stack CRUD Architecture & System Workflows
+## 4. Full-Stack CRUD Architecture & System Workflows
 
 LankaScape implements full persistent Create, Read, Update, and Delete capabilities through integrated REST APIs:
 
@@ -374,7 +374,7 @@ To prevent accidental data loss, clicking **Cancel** triggers a SweetAlert2 conf
 
 ---
 
-## 📡 5. RESTful API Endpoints Specification
+## 5. RESTful API Endpoints Specification
 
 | HTTP Method | Endpoint URI | Access Role | Description & Data Handling |
 | :---: | :--- | :---: | :--- |
@@ -389,7 +389,7 @@ To prevent accidental data loss, clicking **Cancel** triggers a SweetAlert2 conf
 
 ---
 
-## 🧪 6. Software Verification & Test Suite Matrix
+## 6. Software Verification & Test Suite Matrix
 
 | Test ID | Evaluation Criterion | Test Input / Action | Observed System Output | Status |
 | :---: | :--- | :--- | :--- | :---: |
@@ -401,16 +401,16 @@ To prevent accidental data loss, clicking **Cancel** triggers a SweetAlert2 conf
 
 ---
 
-## 🚀 7. Step-by-Step Project Setup & Execution Guide
+## 7. Step-by-Step Project Setup & Execution Guide
 
-### 📋 Prerequisites
+### Prerequisites
 * **Java Development Kit (JDK 17 or higher)**
 * **MySQL Server 8.0** (running locally on port `3306`)
 * **Modern Web Browser** (Google Chrome, Microsoft Edge, Mozilla Firefox)
 
 ---
 
-### ⚡ Option A: 1-Click Launch (Windows - Recommended)
+### Option A: 1-Click Launch (Windows - Recommended)
 1. Ensure your local MySQL service is running on port 3306.
 2. In the project root directory, double-click **`RUN_PROJECT.bat`**.
 3. The launcher will automatically:
@@ -420,7 +420,7 @@ To prevent accidental data loss, clicking **Cancel** triggers a SweetAlert2 conf
 
 ---
 
-### 🛠️ Option B: Step-by-Step Manual Setup
+### Option B: Step-by-Step Manual Setup
 
 #### Step 1 — Clone the Repository
 ```bash
@@ -462,7 +462,7 @@ Simply open **`Frontend/index.html`** in any modern web browser, or launch it wi
 
 ---
 
-### 🔑 Demonstration Accounts
+### Demonstration Accounts
 
 | Role | Email | Password | Access Details |
 | :--- | :--- | :--- | :--- |
@@ -471,7 +471,7 @@ Simply open **`Frontend/index.html`** in any modern web browser, or launch it wi
 
 ---
 
-## 💻 8. Core Code Artifacts
+## 8. Core Code Artifacts
 
 ### Spring Boot Controller (`BookingController.java`)
 ```java
@@ -522,7 +522,7 @@ public class BookingController {
 
 ---
 
-## 📚 9. Conclusion & References
+## 9. Conclusion & References
 
 The **LankaScape Tourism Project** demonstrates how modern web engineering principles can address key challenges in national tourism digitisation. By unifying comprehensive destination discovery, transparent multi-component pricing, and full persistent CRUD operations within a single decoupled platform, the system eliminates information asymmetry, middleman dependency, and operational overhead.
 
@@ -530,11 +530,7 @@ The **LankaScape Tourism Project** demonstrates how modern web engineering princ
 1. **Sri Lanka Tourism Development Authority (SLTDA):** *Annual Statistical Report of Sri Lanka Tourism*, Colombo, Sri Lanka.
 2. **Spring Framework Documentation:** *Spring Boot 3.x Reference Guide & Spring Data JPA*, [https://spring.io/projects/spring-boot](https://spring.io/projects/spring-boot).
 3. **Mozilla Developer Network (MDN):** *JavaScript ES6+, Fetch API, and Responsive CSS Grid/Flexbox Specifications*, [https://developer.mozilla.org](https://developer.mozilla.org).
-4. **Faculty of Engineering, University of Ruhuna:** *EE4207 Web Application Development Course Specifications*, Hapugala, Galle, Sri Lanka.
 
 ---
 
-<p align="center">
-  <b>Developed by K. G. Ishani Chathurika (EG/2023/5538)</b><br>
-  Faculty of Engineering, University of Ruhuna &copy; 2026. All rights reserved.
-</p>
+
