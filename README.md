@@ -8,7 +8,7 @@
   <b>Faculty of Engineering, University of Ruhuna</b><br>
   Department of Electrical & Information Engineering<br>
   <b>Course Module:</b> EE4207 – Web Application Development<br>
-  <b>Student Name:</b> K. G. Ishani Chathurika (Chathurika K.G.I.) &nbsp;|&nbsp; <b>Reg. No:</b> EG/2023/5538 (25th Batch)
+  <b>Student Name:</b> Chathurika K.G.I. &nbsp;|&nbsp; <b>Reg. No:</b> EG/2023/5538
 </p>
 
 <p align="center">
