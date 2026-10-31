@@ -69,7 +69,7 @@ function initDateInput() {
     if (travelDateInput) {
         const today = new Date().toISOString().split('T')[0];
         travelDateInput.min = today;
-        travelDateInput.value = today;
+        travelDateInput.value = ''; // Ensure field starts completely empty with no autofill
     }
 }
 
@@ -245,6 +245,23 @@ function adjustQty(delta) {
     calculateLiveTotal();
 }
 
+// Helper to visually mark and clear form validation errors
+function markFieldError(element) {
+    if (!element) return;
+    element.classList.add('field-error');
+    
+    // Clear error automatically as soon as the user selects or inputs a value
+    const removeError = function() {
+        if (element.value && element.value.trim() !== '') {
+            element.classList.remove('field-error');
+            element.removeEventListener('input', removeError);
+            element.removeEventListener('change', removeError);
+        }
+    };
+    element.addEventListener('input', removeError);
+    element.addEventListener('change', removeError);
+}
+
 // Live Price Calculator
 function calculateLiveTotal() {
     if (!currentDestination) return;
@@ -261,31 +278,47 @@ function calculateLiveTotal() {
 
     // Transport Cost (from Colombo)
     let transportCost = 0;
-    if (vehicleSelect) {
+    let hasTransport = false;
+    if (vehicleSelect && vehicleSelect.selectedIndex >= 0) {
         const selectedVehicleOpt = vehicleSelect.options[vehicleSelect.selectedIndex];
-        transportCost = Number(selectedVehicleOpt.getAttribute('data-price')) || 0;
+        if (selectedVehicleOpt && selectedVehicleOpt.value) {
+            transportCost = Number(selectedVehicleOpt.getAttribute('data-price')) || 0;
+            hasTransport = true;
+        }
     }
 
     // Guide Cost
     let guideCost = 0;
-    if (guideSelect) {
+    let hasGuide = false;
+    if (guideSelect && guideSelect.selectedIndex >= 0) {
         const selectedGuideOpt = guideSelect.options[guideSelect.selectedIndex];
-        guideCost = Number(selectedGuideOpt.getAttribute('data-price')) || 0;
+        if (selectedGuideOpt && selectedGuideOpt.value) {
+            guideCost = Number(selectedGuideOpt.getAttribute('data-price')) || 0;
+            hasGuide = true;
+        }
     }
 
     // Meal Cost (per person)
     let mealPerPerson = 0;
-    if (mealSelect) {
+    let hasMeal = false;
+    if (mealSelect && mealSelect.selectedIndex >= 0) {
         const selectedMealOpt = mealSelect.options[mealSelect.selectedIndex];
-        mealPerPerson = Number(selectedMealOpt.getAttribute('data-price')) || 0;
+        if (selectedMealOpt && selectedMealOpt.value) {
+            mealPerPerson = Number(selectedMealOpt.getAttribute('data-price')) || 0;
+            hasMeal = true;
+        }
     }
     const subtotalMeals = mealPerPerson * qty;
 
     // Hotel Cost
     let hotelCost = 0;
-    if (hotelSelect) {
+    let hasHotel = false;
+    if (hotelSelect && hotelSelect.selectedIndex >= 0) {
         const selectedHotelOpt = hotelSelect.options[hotelSelect.selectedIndex];
-        hotelCost = Number(selectedHotelOpt.getAttribute('data-price')) || 0;
+        if (selectedHotelOpt && selectedHotelOpt.value) {
+            hotelCost = Number(selectedHotelOpt.getAttribute('data-price')) || 0;
+            hasHotel = true;
+        }
     }
 
     const grandTotal = subtotalTickets + transportCost + guideCost + subtotalMeals + hotelCost;
@@ -299,19 +332,27 @@ function calculateLiveTotal() {
     if (valTicket) valTicket.innerText = `Rs. ${subtotalTickets.toLocaleString()}`;
 
     const valTransport = document.getElementById('valTransportBreakdown');
-    if (valTransport) valTransport.innerText = `Rs. ${transportCost.toLocaleString()}`;
+    if (valTransport) {
+        valTransport.innerText = hasTransport ? `Rs. ${transportCost.toLocaleString()}` : '--';
+    }
 
     const valGuide = document.getElementById('valGuideBreakdown');
-    if (valGuide) valGuide.innerText = `Rs. ${guideCost.toLocaleString()}`;
+    if (valGuide) {
+        valGuide.innerText = hasGuide ? `Rs. ${guideCost.toLocaleString()}` : '--';
+    }
 
     const lblMeal = document.getElementById('lblMealBreakdown');
     if (lblMeal) lblMeal.innerText = `Meals (${qty} Pax):`;
 
     const valMeal = document.getElementById('valMealBreakdown');
-    if (valMeal) valMeal.innerText = `Rs. ${subtotalMeals.toLocaleString()}`;
+    if (valMeal) {
+        valMeal.innerText = hasMeal ? `Rs. ${subtotalMeals.toLocaleString()}` : '--';
+    }
 
     const valHotel = document.getElementById('valHotelBreakdown');
-    if (valHotel) valHotel.innerText = `Rs. ${hotelCost.toLocaleString()}`;
+    if (valHotel) {
+        valHotel.innerText = hasHotel ? `Rs. ${hotelCost.toLocaleString()}` : '--';
+    }
 
     const valTotal = document.getElementById('valTotalDisplay');
     if (valTotal) valTotal.innerText = `Rs. ${grandTotal.toLocaleString()}`;
@@ -343,40 +384,110 @@ function handleFormSubmit(event) {
         });
         return;
     }
-    const travelDate = document.getElementById('bookTravelDate').value;
-    const pickupLocation = document.getElementById('bookPickupLocation').value;
-    const qty = parseInt(document.getElementById('bookTicketQty').value, 10) || 1;
-    
+
+    // 2. Form Field Elements
+    const travelDateInput = document.getElementById('bookTravelDate');
+    const pickupLocSelect = document.getElementById('bookPickupLocation');
+    const qtyInput = document.getElementById('bookTicketQty');
     const vehicleSelect = document.getElementById('bookVehicleSelect');
-    const vehicleType = vehicleSelect ? vehicleSelect.value : 'None';
-    const transportCost = vehicleSelect ? (Number(vehicleSelect.options[vehicleSelect.selectedIndex].getAttribute('data-price')) || 0) : 0;
-
     const guideSelect = document.getElementById('bookGuideSelect');
-    const guideType = guideSelect ? guideSelect.value : 'None';
-    const guideCost = guideSelect ? (Number(guideSelect.options[guideSelect.selectedIndex].getAttribute('data-price')) || 0) : 0;
-
     const mealSelect = document.getElementById('bookMealSelect');
-    const mealPlan = mealSelect ? mealSelect.value : 'None';
-    const mealPerPax = mealSelect ? (Number(mealSelect.options[mealSelect.selectedIndex].getAttribute('data-price')) || 0) : 0;
-    const mealCost = mealPerPax * qty;
-
     const hotelSelect = document.getElementById('bookHotelSelect');
-    const hotelName = hotelSelect ? hotelSelect.value : 'None';
-    const hotelCost = hotelSelect ? (Number(hotelSelect.options[hotelSelect.selectedIndex].getAttribute('data-price')) || 0) : 0;
+    const payMethodSelect = document.getElementById('bookPayMethod');
 
-    const payMethod = document.getElementById('bookPayMethod').value;
-    const ticketPrice = Number(currentDestination.ticketPrice) || 0;
-    const ticketCost = ticketPrice * qty;
-    const grandTotal = ticketCost + transportCost + guideCost + mealCost + hotelCost;
+    const travelDate = travelDateInput ? travelDateInput.value.trim() : '';
+    const pickupLocation = pickupLocSelect ? pickupLocSelect.value.trim() : '';
+    const qty = parseInt(qtyInput ? qtyInput.value : 0, 10) || 0;
+    const vehicleType = vehicleSelect ? vehicleSelect.value.trim() : '';
+    const guideType = guideSelect ? guideSelect.value.trim() : '';
+    const mealPlan = mealSelect ? mealSelect.value.trim() : '';
+    const hotelName = hotelSelect ? hotelSelect.value.trim() : '';
+    const payMethod = payMethodSelect ? payMethodSelect.value.trim() : '';
 
+    // 3. Strict Form Validation & Error Highlighting
+    const missingFields = [];
+    let firstInvalidElem = null;
+
+    function registerInvalidField(element, fieldLabel) {
+        if (element) {
+            markFieldError(element);
+            if (!firstInvalidElem) firstInvalidElem = element;
+        }
+        missingFields.push(fieldLabel);
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0];
     if (!travelDate) {
+        registerInvalidField(travelDateInput, 'Date of Travel (Please select a travel date)');
+    } else if (travelDate < todayStr) {
+        registerInvalidField(travelDateInput, 'Date of Travel (Travel date cannot be in the past)');
+    }
+
+    if (!pickupLocation) {
+        registerInvalidField(pickupLocSelect, 'Colombo Departure / Pickup Point');
+    }
+
+    if (qty < 1) {
+        registerInvalidField(qtyInput, 'Number of Travelers (Must be at least 1 pax)');
+    }
+
+    if (!vehicleType) {
+        registerInvalidField(vehicleSelect, 'Private Transport Option');
+    }
+
+    if (!guideType) {
+        registerInvalidField(guideSelect, 'Dedicated Tourist Guide');
+    }
+
+    if (!mealPlan) {
+        registerInvalidField(mealSelect, 'Food & Dining Plan');
+    }
+
+    if (!hotelName) {
+        registerInvalidField(hotelSelect, 'Accommodation / Hotel Stay');
+    }
+
+    if (!payMethod) {
+        registerInvalidField(payMethodSelect, 'Payment Gateway & Method');
+    }
+
+    // If any required field is empty or unselected, halt submission and display clear error message
+    if (missingFields.length > 0) {
+        if (firstInvalidElem) {
+            firstInvalidElem.focus();
+            firstInvalidElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
         Swal.fire({
             icon: 'error',
-            title: 'Please Select a Date',
-            text: 'A valid date of travel is required for ticket reservation.'
+            title: 'Incomplete Booking Details!',
+            html: `
+                <div style="text-align: left; font-size: 0.95rem; line-height: 1.6; padding: 4px 8px;">
+                    <p style="margin-bottom: 12px; color: #f87171; font-weight: 600;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Please select or fill in all required fields marked in red to proceed:
+                    </p>
+                    <ul style="padding-left: 24px; color: #e2e8f0; list-style-type: disc;">
+                        ${missingFields.map(f => `<li style="margin-bottom: 5px;"><strong>${f}</strong></li>`).join('')}
+                    </ul>
+                </div>
+            `,
+            confirmButtonText: '<i class="fa-solid fa-check"></i> OK, I will complete it',
+            confirmButtonColor: '#3b82f6',
+            background: '#1e293b',
+            color: '#f8fafc'
         });
         return;
     }
+
+    // 4. All fields valid -> Compute Costs
+    const transportCost = vehicleSelect ? (Number(vehicleSelect.options[vehicleSelect.selectedIndex].getAttribute('data-price')) || 0) : 0;
+    const guideCost = guideSelect ? (Number(guideSelect.options[guideSelect.selectedIndex].getAttribute('data-price')) || 0) : 0;
+    const mealPerPax = mealSelect ? (Number(mealSelect.options[mealSelect.selectedIndex].getAttribute('data-price')) || 0) : 0;
+    const mealCost = mealPerPax * qty;
+    const hotelCost = hotelSelect ? (Number(hotelSelect.options[hotelSelect.selectedIndex].getAttribute('data-price')) || 0) : 0;
+    const ticketPrice = Number(currentDestination.ticketPrice) || 0;
+    const ticketCost = ticketPrice * qty;
+    const grandTotal = ticketCost + transportCost + guideCost + mealCost + hotelCost;
 
     // Disable button to prevent double-click
     const submitBtn = document.getElementById('btnSubmitBooking');

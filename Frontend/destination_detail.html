@@ -440,6 +440,21 @@
             color: #f8fafc;
         }
 
+        /* Validation Error Styling */
+        .booking-field-group input.field-error,
+        .booking-field-group select.field-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35) !important;
+            background: rgba(239, 68, 68, 0.12) !important;
+            animation: errorShake 0.4s ease-in-out;
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+
         /* Quantity Counter */
         .qty-counter-box {
             display: flex;
@@ -713,19 +728,20 @@
                         <span class="status-pill-green"><i class="fa-solid fa-circle-check"></i> Available</span>
                     </div>
 
-                    <form id="bookingWidgetForm" onsubmit="handleFormSubmit(event)">
+                    <form id="bookingWidgetForm" novalidate onsubmit="handleFormSubmit(event)">
                         <!-- Date of Travel -->
                         <div class="booking-field-group">
-                            <label for="bookTravelDate"><i class="fa-regular fa-calendar"></i> Date of Travel:</label>
+                            <label for="bookTravelDate"><i class="fa-regular fa-calendar"></i> Date of Travel: <span style="color: #ef4444;">*</span></label>
                             <input type="date" id="bookTravelDate" required>
                         </div>
 
                         <!-- Departure / Pickup Location in Colombo / West Coast -->
                         <div class="booking-field-group">
-                            <label for="bookPickupLocation"><i class="fa-solid fa-location-crosshairs"></i> Colombo Departure / Pickup Point:</label>
+                            <label for="bookPickupLocation"><i class="fa-solid fa-location-crosshairs"></i> Colombo Departure / Pickup Point: <span style="color: #ef4444;">*</span></label>
                             <select id="bookPickupLocation" required>
+                                <option value="" disabled selected>-- Select Departure / Pickup Point --</option>
                                 <option value="Bandaranaike International Airport (CMB) - Arrival Lounge">Bandaranaike Int. Airport (CMB) - Arrival Lounge</option>
-                                <option value="Colombo City Hotel (Cinnamon / Shangri-La / Galle Face / Hilton)" selected>Colombo City Hotel (Cinnamon / Shangri-La / Galle Face)</option>
+                                <option value="Colombo City Hotel (Cinnamon / Shangri-La / Galle Face / Hilton)">Colombo City Hotel (Cinnamon / Shangri-La / Galle Face)</option>
                                 <option value="Negombo Coastal Beach Hotel">Negombo Coastal Beach Hotel</option>
                                 <option value="Mount Lavinia Beach Hotel">Mount Lavinia Beach Hotel</option>
                                 <option value="Self Arrival / Direct at Destination Gate">Self Arrival (Meet at Destination Gate)</option>
@@ -734,7 +750,7 @@
 
                         <!-- Number of Travelers -->
                         <div class="booking-field-group">
-                            <label><i class="fa-solid fa-users"></i> Number of Travelers (Pax):</label>
+                            <label><i class="fa-solid fa-users"></i> Number of Travelers (Pax): <span style="color: #ef4444;">*</span></label>
                             <div class="qty-counter-box">
                                 <button type="button" class="qty-counter-btn" onclick="adjustQty(-1)"><i class="fa-solid fa-minus"></i></button>
                                 <input type="number" id="bookTicketQty" class="qty-counter-val" value="1" min="1" max="50" readonly>
@@ -744,10 +760,11 @@
 
                         <!-- Private Transport from Colombo -->
                         <div class="booking-field-group">
-                            <label for="bookVehicleSelect"><i class="fa-solid fa-van-shuttle"></i> Private Transport from Colombo (Roundtrip):</label>
-                            <select id="bookVehicleSelect" onchange="calculateLiveTotal()">
+                            <label for="bookVehicleSelect"><i class="fa-solid fa-van-shuttle"></i> Private Transport from Colombo (Roundtrip): <span style="color: #ef4444;">*</span></label>
+                            <select id="bookVehicleSelect" onchange="calculateLiveTotal()" required>
+                                <option value="" disabled selected>-- Select Transport / Vehicle Option --</option>
                                 <option value="None" data-price="0">No Transport (Self-Arranged / Meet at Site)</option>
-                                <option value="Private AC Sedan (1-3 Pax)" data-price="24000" id="optSedan" selected>Private AC Sedan Car (1-3 Pax)</option>
+                                <option value="Private AC Sedan (1-3 Pax)" data-price="24000" id="optSedan">Private AC Sedan Car (1-3 Pax)</option>
                                 <option value="Luxury AC Van (4-8 Pax)" data-price="33000" id="optVan">Luxury High-Roof AC Van / KDH (4-8 Pax)</option>
                                 <option value="Tourist Mini Coach (9-15 Pax)" data-price="47000" id="optCoach">Tourist Mini Coach (9-15 Pax)</option>
                             </select>
@@ -758,8 +775,9 @@
 
                         <!-- Dedicated Tourist Guide -->
                         <div class="booking-field-group">
-                            <label for="bookGuideSelect"><i class="fa-solid fa-user-tie"></i> Dedicated Tourist Guide:</label>
-                            <select id="bookGuideSelect" onchange="calculateLiveTotal()">
+                            <label for="bookGuideSelect"><i class="fa-solid fa-user-tie"></i> Dedicated Tourist Guide: <span style="color: #ef4444;">*</span></label>
+                            <select id="bookGuideSelect" onchange="calculateLiveTotal()" required>
+                                <option value="" disabled selected>-- Select Tourist Guide Option --</option>
                                 <option value="None (Chauffeur Guide)" data-price="0">Tourist Chauffeur Only (Included with vehicle)</option>
                                 <option value="SLTDA Licensed English Guide" data-price="6000">SLTDA Licensed English Tour Guide (+Rs. 6,000)</option>
                                 <option value="Multilingual Specialist Guide" data-price="9500">Multilingual Specialist (German/French/Russian/Japanese) (+Rs. 9,500)</option>
@@ -768,8 +786,9 @@
 
                         <!-- Food & Dining Plan -->
                         <div class="booking-field-group">
-                            <label for="bookMealSelect"><i class="fa-solid fa-utensils"></i> Food & Dining Plan (Per Person):</label>
-                            <select id="bookMealSelect" onchange="calculateLiveTotal()">
+                            <label for="bookMealSelect"><i class="fa-solid fa-utensils"></i> Food & Dining Plan (Per Person): <span style="color: #ef4444;">*</span></label>
+                            <select id="bookMealSelect" onchange="calculateLiveTotal()" required>
+                                <option value="" disabled selected>-- Select Food & Dining Plan --</option>
                                 <option value="No Meal Plan" data-price="0">No Meals (Self Dining / Local Restaurants)</option>
                                 <option value="Bed & Breakfast" data-price="2500">Bed & Breakfast (Ceylon Tea + Breakfast) (+Rs. 2,500/pax)</option>
                                 <option value="Half Board" data-price="5500">Half Board (Breakfast + 3-Course Dinner) (+Rs. 5,500/pax)</option>
@@ -779,8 +798,9 @@
 
                         <!-- Hotel Accommodation -->
                         <div class="booking-field-group">
-                            <label for="bookHotelSelect"><i class="fa-solid fa-hotel"></i> Accommodation / Hotel Stay:</label>
-                            <select id="bookHotelSelect" onchange="calculateLiveTotal()">
+                            <label for="bookHotelSelect"><i class="fa-solid fa-hotel"></i> Accommodation / Hotel Stay: <span style="color: #ef4444;">*</span></label>
+                            <select id="bookHotelSelect" onchange="calculateLiveTotal()" required>
+                                <option value="" disabled selected>-- Select Accommodation / Hotel --</option>
                                 <option value="None" data-price="0">Day Tour (No Hotel Stay)</option>
                                 <option value="3-Star Boutique Hotel" data-price="10000">3-Star Boutique / Eco Hotel (+Rs. 10,000)</option>
                                 <option value="4-Star Deluxe Resort (Jetwing / Cinnamon)" data-price="18000">4-Star Deluxe Resort (Jetwing / Cinnamon) (+Rs. 18,000)</option>
@@ -790,9 +810,10 @@
 
                         <!-- Payment Method -->
                         <div class="booking-field-group">
-                            <label for="bookPayMethod"><i class="fa-solid fa-credit-card"></i> Payment Gateway & Method:</label>
-                            <select id="bookPayMethod">
-                                <option value="Visa" selected>Visa Card (Instant Online Checkout)</option>
+                            <label for="bookPayMethod"><i class="fa-solid fa-credit-card"></i> Payment Gateway & Method: <span style="color: #ef4444;">*</span></label>
+                            <select id="bookPayMethod" required>
+                                <option value="" disabled selected>-- Select Payment Gateway / Method --</option>
+                                <option value="Visa">Visa Card (Instant Online Checkout)</option>
                                 <option value="Mastercard">Mastercard (Instant Online Checkout)</option>
                                 <option value="PayPal">PayPal Express ($ USD Checkout)</option>
                                 <option value="Pay on Arrival">Pay on Arrival (Cash or Card to Chauffeur)</option>
