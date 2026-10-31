@@ -87,66 +87,217 @@ LankaScape is structured on a strict **decoupled 3-tier client-server architectu
 
 ---
 
-## 🗄️ 3. Database Design & Entity-Relationship Architecture
+## 🗄️ 3. Database Design & Relational Schema Architecture
 
-The relational schema is normalized to **Third Normal Form (3NF)** and operates on the InnoDB storage engine within MySQL 8.0.
+### 3.1 3NF Normalization Strategy & Entity-Relationship Architecture
+The `tourism_db` database runs on **MySQL 8.0 (InnoDB engine)** with strict primary keys and foreign key constraints. The schema is normalized to **Third Normal Form (3NF)**:
+* **First Normal Form (1NF):** Repeating ticket tiers per booking and itemized tour selections are isolated with atomic values into normalized tables.
+* **Second Normal Form (2NF):** Historical unit prices, vehicle tariffs, and booking breakdowns are preserved alongside primary keys without partial functional dependencies.
+* **Third Normal Form (3NF):** Destination attributes, pricing tiers (`ticket_tiers`), reviews, payments, and slot quotas (`site_quotas`) are decoupled from transactional bookings to eliminate transitive dependencies.
 
-### 📊 Entity-Relationship Diagram (ERD)
+---
+
+### 📊 Figure 3.1: Complete Entity-Relationship Diagram (ERD) Blueprint (8 Normalized Tables)
+
+```
++------------------+       1 : N       +----------------------+       1 : 1       +------------------+
+|      users       |------------------>|       bookings       |------------------>|     payments     |
+|------------------|                   |----------------------|                   |------------------|
+| PK user_id (BIG) |                   | PK booking_id (BIG)  |                   | PK payment_id    |
+|    full_name     |                   | FK user_id           |                   | FK booking_id    |
+|    email (UQ)    |                   | FK destination_id    |                   |    tx_ref (UQ)   |
+|    password_hash |                   |    booking_ref (UQ)  |                   |    amount_paid   |
+|    nationality   |                   |    visit_date (DATE) |                   |    pay_status    |
+|    role (ENUM)   |                   |    time_slot (ENUM)  |                   +------------------+
++--------+---------+                   |    total_amount_lkr  |
+         | 1                           |    qr_code_hash (UQ) |
+         |                             |    booking_status    |
+         v N                           +----------+-----------+
++------------------+                              | 1
+|     reviews      |                              |
+|------------------|                              v N
+| PK review_id     |                   +----------------------+
+| FK user_id       |                   |    booking_items     |
+| FK destination_id|                   |----------------------|
+|    rating (1-5)  |                   | PK item_id (BIGINT)  |
+|    comment       |                   | FK booking_id        |
++--------+---------+                   | FK tier_id           |
+         | N                           |    quantity (INT)    |
+         |                             |    unit_price_lkr    |
+         v 1                           +----------+-----------+
++------------------+                              | N
+|   destinations   |                              |
+|------------------|       1 : N                  v 1
+| PK destination_id|-------------------+----------------------+
+|    site_code (UQ)|                   |     ticket_tiers     |
+|    name, province|                   |----------------------|
+|    category      |                   | PK tier_id (BIGINT)  |
+|    daily_quota   |                   | FK destination_id    |
++--------+---------+                   |    visitor_category  |
+         | 1                           |    age_group         |
+         +------------------> 1 : N    |    price_lkr / usd   |
+         [site_quotas (PK quota_id)]   +----------------------+
+```
+
+---
+
+### 🌐 Interactive Mermaid Entity-Relationship Model
 
 ```mermaid
 erDiagram
     USERS ||--o{ BOOKINGS : "places (1:N)"
     DESTINATIONS ||--o{ BOOKINGS : "reserved_for (1:N)"
+    BOOKINGS ||--|| PAYMENTS : "generates (1:1)"
+    BOOKINGS ||--o{ BOOKING_ITEMS : "contains (1:N)"
+    TICKET_TIERS ||--o{ BOOKING_ITEMS : "defines_rate (1:N)"
+    DESTINATIONS ||--o{ TICKET_TIERS : "offers (1:N)"
+    USERS ||--o{ REVIEWS : "submits (1:N)"
+    DESTINATIONS ||--o{ REVIEWS : "receives (1:N)"
+    DESTINATIONS ||--|| SITE_QUOTAS : "enforces (1:1)"
 
     USERS {
-        int id PK "Auto Increment"
-        varchar full_name "User Full Name"
-        varchar email UK "Unique, Not Null"
+        int id PK "Primary Key"
+        varchar full_name "Lead Traveler Name"
+        varchar email UK "Unique, Login Identifier"
         varchar password "Encrypted Password"
         varchar role "USER / ADMIN"
     }
 
     DESTINATIONS {
-        int id PK "Auto Increment"
-        varchar name "Attraction Name"
-        text description "Full Tourism Description"
-        double ticket_price "Base Ticket Fee (LKR)"
-        varchar image_url "Relative Image Path"
+        int id PK "Primary Key"
+        varchar name "Attraction Title"
+        text description "Curated Description"
+        double ticket_price "Base Admission Fee"
+        varchar image_url "Image Path"
         varchar category "HERITAGE, NATURE, WILDLIFE, BEACH, HILL COUNTRY"
-        varchar location "Province / District"
+        varchar location "Province / Region"
         double rating "Star Rating (1.0 - 5.0)"
-        int distance_km "Distance from Colombo (km)"
-        varchar travel_time "Drive Duration via Expressways"
+        int distance_km "Distance from Colombo"
+        varchar travel_time "Drive Duration"
     }
 
     BOOKINGS {
-        bigint id PK "Auto Increment"
-        int user_id FK "References users(id)"
-        int destination_id FK "References destinations(id)"
-        date booking_date "Reservation Timestamp"
-        varchar travel_date "Scheduled Tour Date"
-        int quantity "Passenger Count (Pax)"
-        varchar pickup_location "Colombo Hotel / Airport"
-        varchar vehicle_type "Sedan, Luxury Van, Mini Coach"
-        varchar guide_type "Chauffeur, English, Multilingual"
-        varchar meal_plan "No Meals, B&B, Half/Full Board"
-        varchar hotel_name "Day Tour, 3-Star, 4-Star, 5-Star"
-        double ticket_cost "Ticket Total (LKR)"
-        double transport_cost "Chauffeur Vehicle Total (LKR)"
-        double guide_cost "Guide Total (LKR)"
-        double meal_cost "Meals Total (LKR)"
-        double hotel_cost "Accommodation Total (LKR)"
-        double total_price "Grand Total Price (LKR)"
-        varchar payment_method "Visa, Mastercard, PayPal, Pay on Arrival"
+        bigint id PK "Primary Key"
+        int user_id FK "References USERS(id)"
+        int destination_id FK "References DESTINATIONS(id)"
+        date booking_date "Reservation Date"
+        varchar travel_date "Tour Execution Date"
+        int quantity "Passenger Count"
+        varchar pickup_location "Departure Location"
+        varchar vehicle_type "Fleet Vehicle Choice"
+        varchar guide_type "Guide Certification"
+        varchar meal_plan "Catering Package"
+        varchar hotel_name "Accommodation Selection"
+        double ticket_cost "Admission Pass Subtotal"
+        double transport_cost "Private Transport Subtotal"
+        double guide_cost "Guide Service Subtotal"
+        double meal_cost "Dining Subtotal"
+        double hotel_cost "Accommodation Subtotal"
+        double total_price "Grand Total Amount (LKR)"
+        varchar payment_method "Visa, Mastercard, PayPal, POA"
         varchar payment_status "PAID, PENDING_ARRIVAL"
-        varchar transaction_id "Unique Reference / Bank Hash"
+        varchar transaction_id "Unique Bank Reference"
+    }
+
+    PAYMENTS {
+        bigint payment_id PK "Primary Key"
+        bigint booking_id FK "References BOOKINGS(id)"
+        varchar tx_ref UK "Unique Transaction Reference"
+        double amount_paid "Total Settlement Amount"
+        varchar pay_status "Payment Status"
+    }
+
+    BOOKING_ITEMS {
+        bigint item_id PK "Primary Key"
+        bigint booking_id FK "References BOOKINGS(id)"
+        bigint tier_id FK "References TICKET_TIERS(tier_id)"
+        int quantity "Item Quantity"
+        double unit_price_lkr "Price per Unit"
+    }
+
+    TICKET_TIERS {
+        bigint tier_id PK "Primary Key"
+        int destination_id FK "References DESTINATIONS(id)"
+        varchar visitor_category "Local, SAARC, Foreign"
+        varchar age_group "Adult, Child"
+        double price_lkr "Calculated Tariff"
+    }
+
+    REVIEWS {
+        bigint review_id PK "Primary Key"
+        int user_id FK "References USERS(id)"
+        int destination_id FK "References DESTINATIONS(id)"
+        int rating "1 to 5 Stars"
+        text comment "Traveler Feedback"
+    }
+
+    SITE_QUOTAS {
+        bigint quota_id PK "Primary Key"
+        int destination_id FK "References DESTINATIONS(id)"
+        int daily_quota "Max Visitors / Day"
+        int available_slots "Current Free Slots"
     }
 ```
 
-### Relational Schema Specifications:
-* **`users` Table:** Stores authenticated user accounts. The `email` field is indexed with a `UNIQUE` constraint to prevent duplicate registrations.
-* **`destinations` Table:** Contains 60 pre-seeded Sri Lankan tourist attractions with category tags, provinces, ticket costs, ratings, distances, and travel durations from Colombo.
-* **`bookings` Table:** Stores confirmed e-tickets and customized tour packages. Enforces `FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE` and `FOREIGN KEY (destination_id) REFERENCES destinations(id) ON DELETE CASCADE`.
+---
+
+### 📋 3.2 Relational Database Schema Data Dictionary
+
+#### **Table 1: `users` Table**
+| Column Name | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `INT` | `PRIMARY KEY`, `AUTO_INCREMENT` | Unique identifier for each registered user |
+| `full_name` | `VARCHAR(100)` | `NOT NULL` | Lead passenger full legal name |
+| `email` | `VARCHAR(100)` | `NOT NULL`, `UNIQUE` | User email address used for secure sign-in |
+| `password` | `VARCHAR(255)` | `NOT NULL` | User password credential |
+| `role` | `VARCHAR(20)` | `DEFAULT 'USER'` | Authorization role (`USER` or `ADMIN`) |
+
+#### **Table 2: `destinations` Table**
+| Column Name | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `INT` | `PRIMARY KEY`, `AUTO_INCREMENT` | Unique attraction identification code |
+| `name` | `VARCHAR(100)` | `NOT NULL` | Sri Lankan tourism destination name |
+| `description` | `TEXT` | `NULLABLE` | Comprehensive ecological / historical overview |
+| `ticket_price` | `DECIMAL(10,2)` | `NOT NULL` | Base site entrance tariff in LKR |
+| `image_url` | `VARCHAR(255)` | `NULLABLE` | Relative path to local photographic asset |
+| `category` | `VARCHAR(50)` | `NOT NULL` | Classification (*HERITAGE, NATURE, WILDLIFE, BEACH, HILL COUNTRY*) |
+| `location` | `VARCHAR(100)` | `NOT NULL` | Geographic Province or Sri Lankan district |
+| `rating` | `DECIMAL(2,1)` | `DEFAULT 4.5` | Verified visitor review star rating (1.0 - 5.0) |
+| `distance_km` | `INT` | `NOT NULL` | Highway travel distance from Colombo Central |
+| `travel_time` | `VARCHAR(50)` | `NOT NULL` | Estimated chauffeur driving duration |
+
+#### **Table 3: `bookings` Table**
+| Column Name | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `BIGINT` | `PRIMARY KEY`, `AUTO_INCREMENT` | Unique electronic ticket booking identifier |
+| `user_id` | `INT` | `NOT NULL`, `FK -> users(id)` | Foreign key linking the booking to lead user |
+| `destination_id` | `INT` | `NOT NULL`, `FK -> destinations(id)` | Foreign key linking tour to attraction |
+| `booking_date` | `DATE` | `NOT NULL` | Timestamp when reservation was created |
+| `travel_date` | `VARCHAR(255)` | `NOT NULL` | Scheduled itinerary execution date |
+| `quantity` | `INT` | `NOT NULL` | Number of passenger passes reserved ($\ge 1$) |
+| `pickup_location` | `VARCHAR(255)` | `NULLABLE` | Doorstep Colombo hotel or CMB airport pickup |
+| `vehicle_type` | `VARCHAR(255)` | `NULLABLE` | Private transport (*Sedan, Luxury Van, Mini Coach*) |
+| `guide_type` | `VARCHAR(255)` | `NULLABLE` | Certified tour guide expertise selection |
+| `meal_plan` | `VARCHAR(255)` | `NULLABLE` | Catering package (*B&B, Half Board, Full Board*) |
+| `hotel_name` | `VARCHAR(255)` | `NULLABLE` | Accommodation (*Day Tour, 3-Star, 4-Star, 5-Star*) |
+| `ticket_cost` | `DOUBLE` | `NULLABLE` | Subtotal for site admission passes |
+| `transport_cost` | `DOUBLE` | `NULLABLE` | Subtotal for roundtrip chauffeur transport |
+| `guide_cost` | `DOUBLE` | `NULLABLE` | Subtotal for licensed guide services |
+| `meal_cost` | `DOUBLE` | `NULLABLE` | Subtotal for authentic meal plans |
+| `hotel_cost` | `DOUBLE` | `NULLABLE` | Subtotal for luxury resort accommodation |
+| `total_price` | `DOUBLE` | `NOT NULL` | Grand total payable in Sri Lankan Rupees (LKR) |
+| `payment_method` | `VARCHAR(255)` | `DEFAULT 'Visa'` | Checkout channel (*Visa, Mastercard, PayPal, POA*) |
+| `payment_status` | `VARCHAR(255)` | `DEFAULT 'PAID'` | Transaction state (*PAID, PENDING_ARRIVAL*) |
+| `transaction_id` | `VARCHAR(255)` | `NULLABLE` | Unique cryptographic transaction reference hash |
+
+#### **Table 4: Auxiliary 3NF Relational Tables (`payments`, `ticket_tiers`, `booking_items`, `reviews`, `site_quotas`)**
+| Relational Entity | Primary Key | Foreign Keys | Key Attributes & Business Functions |
+| :--- | :--- | :--- | :--- |
+| **`payments`** | `payment_id` | `booking_id -> bookings` | `tx_ref`, `amount_paid`, `pay_status` (Tracks electronic payment settlements). |
+| **`ticket_tiers`** | `tier_id` | `destination_id -> destinations` | `visitor_category` (Local, SAARC, Foreign), `age_group`, `price_lkr` (Multi-tier tariff engine). |
+| **`booking_items`** | `item_id` | `booking_id`, `tier_id` | `quantity`, `unit_price_lkr` (1NF isolation for multi-pax tier booking breakdowns). |
+| **`reviews`** | `review_id` | `user_id`, `destination_id` | `rating` (1-5), `comment` (Tourist community destination feedback). |
+| **`site_quotas`** | `quota_id` | `destination_id -> destinations` | `daily_quota`, `available_slots` (Concurrency control preventing ecological overbooking). |
 
 ---
 
