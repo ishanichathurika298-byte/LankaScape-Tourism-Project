@@ -1,4 +1,4 @@
-/* Modern CSS for SL Tourism inspired by Piyoway */
+
 * {
     margin: 0;
     padding: 0;
@@ -18,7 +18,7 @@ body {
     position: relative;
 }
 
-/* Fixed Ambient Background Image across the entire site */
+
 body::before {
     content: '';
     position: fixed;
@@ -37,7 +37,7 @@ body::before {
     pointer-events: none;
 }
 
-/* Navbar */
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -150,9 +150,7 @@ body::before {
 .dropdown-content .logout-btn { color: #e74c3c; border-top: 1px solid #eee; }
 .profile-dropdown:hover .dropdown-content { display: block; }
 
-/* =========================================
-   Modern Hero Slider / Carousel Styles
-========================================= */
+
 .hero-slider-container {
     position: relative;
     height: 92vh;
@@ -185,7 +183,7 @@ body::before {
     z-index: 2;
 }
 
-/* Background image with Ken-Burns zoom */
+
 .slide-bg {
     position: absolute;
     inset: 0;
@@ -201,7 +199,7 @@ body::before {
     transform: scale(1.08);
 }
 
-/* Cinematic Dark Gradient Overlays */
+
 .slide-overlay {
     position: absolute;
     inset: 0;
@@ -211,7 +209,7 @@ body::before {
     z-index: 2;
 }
 
-/* Slide Typography & Content */
+
 .hero-content {
     position: relative;
     z-index: 3;

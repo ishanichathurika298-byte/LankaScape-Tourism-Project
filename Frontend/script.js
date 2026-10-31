@@ -311,6 +311,7 @@ function bookTicket(destinationId, placeName) {
                 body: JSON.stringify({
                     userId: user.id,
                     destinationId: destinationId,
+                    destinationName: placeName,
                     quantity: parseInt(data.qty),
                     travelDate: data.date,
                     hotelName: data.hotel,

@@ -21,6 +21,9 @@ public class Booking {
     @JoinColumn(name = "destination_id", nullable = false)
     private Destination destination;
 
+    @Column(name = "destination_name")
+    private String destinationName;
+
     @Column(name = "booking_date")
     private LocalDate bookingDate;
 
@@ -231,5 +234,13 @@ public class Booking {
 
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public String getDestinationName() {
+        return destinationName;
+    }
+
+    public void setDestinationName(String destinationName) {
+        this.destinationName = destinationName;
     }
 }

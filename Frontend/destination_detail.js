@@ -388,6 +388,7 @@ function handleFormSubmit(event) {
     const bookingPayload = {
         userId: user.id,
         destinationId: currentDestination.id,
+        destinationName: currentDestination.name,
         quantity: qty,
         travelDate: travelDate,
         pickupLocation: pickupLocation,

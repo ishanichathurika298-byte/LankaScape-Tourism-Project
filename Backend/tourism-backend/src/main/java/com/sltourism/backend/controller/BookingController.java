@@ -49,6 +49,7 @@ public class BookingController {
         Booking booking = new Booking();
         booking.setUser(user.get());
         booking.setDestination(destination.get());
+        booking.setDestinationName(destination.get().getName());
         booking.setQuantity(request.getQuantity());
         booking.setBookingDate(LocalDate.now());
         booking.setHotelName(request.getHotelName() != null ? request.getHotelName() : "None");
@@ -114,6 +115,9 @@ public class BookingController {
         }
 
         Booking booking = optionalBooking.get();
+        if (booking.getDestinationName() == null && booking.getDestination() != null) {
+            booking.setDestinationName(booking.getDestination().getName());
+        }
 
         if (request.getTravelDate() != null && !request.getTravelDate().trim().isEmpty()) {
             booking.setTravelDate(request.getTravelDate());
