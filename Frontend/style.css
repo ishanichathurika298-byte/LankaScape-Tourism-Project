@@ -436,6 +436,36 @@ body::before {
     .explore-sort-box { justify-content: space-between; }
     .explore-category-pills { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 12px; }
     .cat-filter-btn { white-space: nowrap; }
+
+    /* Categories & Seasons Grid 2-Column on Tablet */
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .seasons-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    /* Auth Pages (Login/Register) Split Layout on Tablet */
+    .auth-body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+        flex-direction: column;
+    }
+    .auth-left {
+        max-width: 100%;
+        padding: 40px 24px;
+        width: 100%;
+    }
+    .auth-right {
+        display: none;
+    }
+    .auth-form-container {
+        max-width: 440px;
+        margin: 20px auto;
+    }
 }
 
 /* Section Common & Modern Headers */
@@ -1246,4 +1276,223 @@ body::before {
     color: #cbd5e1;
     line-height: 1.6;
     max-width: 500px;
+}
+
+
+/* =========================================
+   Mobile Optimization (Tablets & Smartphones <= 768px)
+========================================= */
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden;
+    }
+
+    /* Navbar Mobile Layout */
+    .navbar {
+        padding: 10px 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .nav-logo {
+        height: 38px;
+    }
+    .nav-links {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        gap: 8px;
+        padding: 4px 0 6px;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+    .nav-links li {
+        margin: 0;
+        flex-shrink: 0;
+    }
+    .nav-links a {
+        font-size: 13px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: inline-block;
+    }
+    .btn-login {
+        padding: 6px 16px !important;
+        font-size: 13px !important;
+        border-radius: 20px !important;
+    }
+
+    /* Hero Section Mobile */
+    .hero-slider-container {
+        height: 85vh;
+        min-height: 540px;
+    }
+    .hero-slide {
+        padding: 0 20px;
+    }
+    .hero-content {
+        margin-top: -15px;
+    }
+    .hero-content h1 {
+        font-size: 32px;
+        line-height: 1.2;
+        margin-bottom: 14px;
+    }
+    .hero-content p {
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: 24px;
+    }
+    .hero-indicators {
+        left: 20px;
+        bottom: 75px;
+    }
+
+    /* Section Modern Headers */
+    .section-header-modern {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .header-left h2 {
+        font-size: 26px;
+    }
+    .header-left p {
+        font-size: 14px;
+    }
+
+    /* Explore / Destinations Filter Controls */
+    .search-input-box input {
+        font-size: 15px;
+        padding: 12px 14px 12px 42px;
+    }
+    .explore-sort-box select {
+        font-size: 13.5px;
+        padding: 7px 12px;
+    }
+
+    /* Universal SweetAlert2 Mobile Optimization */
+    .swal2-popup {
+        width: 92vw !important;
+        max-width: 92vw !important;
+        padding: 18px 14px !important;
+    }
+    .swal2-title {
+        font-size: 18px !important;
+    }
+    .swal2-content {
+        font-size: 13.5px !important;
+    }
+}
+
+/* =========================================
+   Small Mobile Optimization (Smartphones <= 480px)
+========================================= */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 8px 12px;
+    }
+    .nav-logo {
+        height: 34px;
+    }
+
+    /* Hero Mobile Typography & CTA Buttons */
+    .hero-slider-container {
+        height: 82vh;
+        min-height: 490px;
+    }
+    .slide-tag {
+        font-size: 9.5px;
+        padding: 4px 10px;
+        margin-bottom: 14px;
+    }
+    .hero-content h1 {
+        font-size: 26px;
+        line-height: 1.25;
+    }
+    .hero-content p {
+        font-size: 14px;
+    }
+    .slide-btns {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 10px;
+    }
+    .btn-hero-primary,
+    .btn-hero-secondary {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        padding: 12px 18px;
+        font-size: 14px;
+    }
+
+    /* Hide heavy widget bar on small mobile to avoid obstructing CTA */
+    .hero-widgets-bar {
+        display: none;
+    }
+    .hero-indicators {
+        bottom: 20px;
+    }
+
+    /* 1-Column Responsive Grids */
+    .destinations-section,
+    .categories-section,
+    .seasons-section {
+        padding: 30px 14px;
+    }
+    .category-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .cat-card {
+        height: 220px;
+    }
+    .destinations-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+    .dest-card-media {
+        height: 200px;
+    }
+    .seasons-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .season-card {
+        padding: 24px 20px;
+    }
+
+    /* Auth Page Mobile */
+    .auth-left {
+        padding: 24px 16px;
+    }
+    .auth-form-container h2 {
+        font-size: 24px;
+    }
+    .auth-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .social-btns {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Footer Mobile */
+    .footer {
+        padding: 40px 16px 20px;
+    }
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 26px;
+    }
 }

@@ -358,7 +358,92 @@
             margin-top: 15px;
             font-family: monospace;
         }
-    </style>
+    
+        /* Mobile Responsive Breakpoints */
+        @media (max-width: 900px) {
+            .bookings-wrapper {
+                width: 95%;
+                margin: 24px auto 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .dashboard-title h1 {
+                font-size: 24px;
+            }
+            .dashboard-title p {
+                font-size: 13.5px;
+            }
+            .stats-summary {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .stat-card-mini {
+                text-align: left;
+                padding: 10px 14px;
+            }
+            .toolbar {
+                padding: 14px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .search-box, .filter-group {
+                width: 100%;
+                min-width: 100%;
+            }
+            .bookings-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+            .booking-card-media {
+                height: 160px;
+            }
+            .booking-card-body {
+                padding: 18px 16px;
+            }
+            .card-btn-group {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .card-btn-group .btn-action:first-child {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-summary {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .stat-card-mini strong {
+                font-size: 18px;
+            }
+            .booking-card-body h3 {
+                font-size: 18px;
+            }
+            .booking-meta-row {
+                font-size: 12.5px;
+            }
+            .price-row .amount {
+                font-size: 20px;
+            }
+            .card-btn-group {
+                grid-template-columns: 1fr 1fr;
+            }
+            .card-btn-group button {
+                padding: 8px 6px;
+                font-size: 11.5px;
+            }
+        }
+</style>
 </head>
 <body>
 

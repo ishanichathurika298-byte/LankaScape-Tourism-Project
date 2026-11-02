@@ -585,6 +585,86 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 768px) {
+            .detail-page-container {
+                width: 95%;
+                margin: 15px auto 50px;
+            }
+            .detail-nav-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .back-btn-pill {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            .breadcrumb-trail {
+                font-size: 12px;
+                flex-wrap: wrap;
+            }
+            .showcase-card {
+                height: 250px;
+                border-radius: 14px;
+            }
+            .detail-title {
+                font-size: 26px;
+                line-height: 1.25;
+            }
+            .detail-description {
+                font-size: 14.5px;
+                line-height: 1.7;
+            }
+            .booking-widget-card {
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+            .booking-field-group input,
+            .booking-field-group select {
+                font-size: 16px; /* Prevents auto-zoom on mobile Safari */
+                padding: 11px 13px;
+            }
+            .booking-widget-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .total-row .total-amount {
+                font-size: 24px;
+            }
+            .btn-submit-booking {
+                font-size: 14.5px;
+                padding: 14px;
+            }
+            .inclusions-section {
+                padding: 20px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .showcase-card {
+                height: 200px;
+            }
+            .showcase-pill {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .showcase-rating {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            .detail-title {
+                font-size: 22px;
+            }
+            .breakdown-row {
+                font-size: 13px;
+            }
+            .qty-counter-btn {
+                width: 44px;
+                height: 44px;
+            }
+        }
     </style>
 </head>
 <body>
