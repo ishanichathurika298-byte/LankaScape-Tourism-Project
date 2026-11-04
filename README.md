@@ -440,7 +440,7 @@ cd LankaScape-Tourism-Project
    ```properties
    spring.datasource.url=jdbc:mysql://localhost:3306/tourism_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
    spring.datasource.username=root
-   spring.datasource.password=Chathu#28
+   spring.datasource.password=your_mysql_password
    ```
    *(If your local MySQL root password differs, update the `spring.datasource.password` line accordingly).*
 
@@ -471,7 +471,7 @@ To ensure global accessibility without requiring any local database or server se
 
 | Role | Email | Password | Access Details |
 | :--- | :--- | :--- | :--- |
-| **Primary User** | `ishanichathurika298@gmail.com` | `Chathu#28` | Pre-configured account with active persistent bookings. |
+| **Demo Traveler** | `demo@lankascape.lk` | `Demo@123` | Pre-configured demonstration account with sample persistent bookings. |
 | **New Traveler** | *Any valid email* | *User choice* | Register instantly on `register.html` to create a new profile. |
 
 ---

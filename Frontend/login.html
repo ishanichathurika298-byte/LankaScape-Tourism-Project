@@ -152,8 +152,8 @@
                 const namePart = email.split('@')[0].replace(/[._]/g, ' ');
                 const formattedName = namePart.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                 const sessionUser = {
-                    id: (email.toLowerCase() === 'ishanichathurika298@gmail.com') ? 1 : Math.floor(Math.random() * 1000) + 10,
-                    fullName: (email.toLowerCase() === 'ishanichathurika298@gmail.com') ? 'Ishani Chathurika' : (formattedName || 'Traveler'),
+                    id: Math.floor(Math.random() * 1000) + 10,
+                    fullName: formattedName || 'Traveler',
                     email: email,
                     role: 'USER'
                 };
@@ -174,71 +174,41 @@
 
         // Google Social Login
         document.getElementById('googleLoginBtn').addEventListener('click', function() {
+            const remember = documen// Google Social Login
+        document.getElementById('googleLoginBtn').addEventListener('click', function() {
             const remember = document.getElementById('rememberMe').checked;
 
             Swal.fire({
                 title: '<div style="display:flex; align-items:center; justify-content:center; gap:10px;"><i class="fa-brands fa-google" style="color:#ea4335; font-size:24px;"></i> <span>Sign in with Google</span></div>',
                 html: `
-                    <div style="text-align: left; padding: 5px 0;">
-                        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">Choose an account to continue to <b>LankaScape</b></p>
-                        
-                        <div id="swalGooglePrimary" style="display: flex; align-items: center; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; cursor: pointer; transition: 0.2s; margin-bottom: 10px;">
-                            <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #ea4335, #fbbc05); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">I</div>
-                            <div style="margin-left: 14px;">
-                                <div style="font-weight: 600; color: #f8fafc; font-size: 14px;">Ishani Chathurika</div>
-                                <div style="color: #94a3b8; font-size: 12px;">ishanichathurika298@gmail.com</div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: #64748b; font-size: 12px;"></i>
-                        </div>
-
-                        <div id="swalGoogleOther" style="display: flex; align-items: center; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; cursor: pointer; transition: 0.2s;">
-                            <div style="width: 42px; height: 42px; border-radius: 50%; background: #334155; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="fa-solid fa-user-plus"></i></div>
-                            <div style="margin-left: 14px;">
-                                <div style="font-weight: 600; color: #f8fafc; font-size: 14px;">Use another Google account</div>
-                                <div style="color: #94a3b8; font-size: 12px;">Sign in with custom Gmail</div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right" style="margin-left: auto; color: #64748b; font-size: 12px;"></i>
-                        </div>
+                    <div style="text-align: left; padding: 10px 0;">
+                        <p style="color: #94a3b8; font-size: 13.5px; margin-bottom: 16px;">Sign in securely using your Google Account.</p>
+                        <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #e2e8f0;">Google Email Address:</label>
+                        <input type="email" id="swalGoogleEmailInput" class="swal2-input" placeholder="youremail@gmail.com" style="margin: 0 0 10px; width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; color: #fff; font-size: 14px;">
                     </div>
                 `,
                 background: '#1e293b',
                 color: '#fff',
-                showConfirmButton: false,
+                showConfirmButton: true,
+                confirmButtonText: '<i class="fa-brands fa-google"></i> Continue with Google',
+                confirmButtonColor: '#ea4335',
                 showCancelButton: true,
                 cancelButtonText: 'Cancel',
                 cancelButtonColor: '#475569',
-                didOpen: () => {
-                    // Hover effect
-                    const p = document.getElementById('swalGooglePrimary');
-                    const o = document.getElementById('swalGoogleOther');
-                    [p, o].forEach(el => {
-                        if (el) {
-                            el.onmouseover = () => el.style.borderColor = '#38bdf8';
-                            el.onmouseout = () => el.style.borderColor = '#334155';
-                        }
-                    });
-
-                    // Click Primary
-                    p.onclick = () => completeSocialAuth('Ishani Chathurika', 'ishanichathurika298@gmail.com', 'Google', remember);
-
-                    // Click Other
-                    o.onclick = () => {
-                        Swal.fire({
-                            title: 'Enter Google Email',
-                            input: 'email',
-                            inputPlaceholder: 'yourname@gmail.com',
-                            background: '#1e293b',
-                            color: '#fff',
-                            showCancelButton: true,
-                            confirmButtonText: 'Continue with Google',
-                            confirmButtonColor: '#ea4335'
-                        }).then((res) => {
-                            if (res.isConfirmed && res.value) {
-                                const customName = res.value.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                                completeSocialAuth(customName, res.value, 'Google', remember);
-                            }
-                        });
-                    };
+                preConfirm: () => {
+                    const input = document.getElementById('swalGoogleEmailInput');
+                    const val = input ? input.value.trim() : '';
+                    if (!val || !val.includes('@')) {
+                        Swal.showValidationMessage('Please enter a valid Google email address');
+                        return false;
+                    }
+                    return val;
+                }
+            }).then((res) => {
+                if (res.isConfirmed && res.value) {
+                    const email = res.value;
+                    const customName = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    completeSocialAuth(customName, email, 'Google', remember);
                 }
             });
         });
@@ -250,41 +220,40 @@
             Swal.fire({
                 title: '<div style="display:flex; align-items:center; justify-content:center; gap:10px;"><i class="fa-brands fa-facebook" style="color:#1877f2; font-size:26px;"></i> <span>Log in with Facebook</span></div>',
                 html: `
-                    <div style="text-align: left; padding: 5px 0;">
-                        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">LankaScape will receive your name and profile picture.</p>
-                        
-                        <div style="display: flex; align-items: center; padding: 14px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; margin-bottom: 18px;">
-                            <div style="width: 44px; height: 44px; border-radius: 50%; background: #1877f2; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">I</div>
-                            <div style="margin-left: 14px;">
-                                <div style="font-weight: 600; color: #f8fafc; font-size: 15px;">Ishani Chathurika</div>
-                                <div style="color: #38bdf8; font-size: 12px;"><i class="fa-solid fa-circle-check"></i> Facebook Verified Account</div>
-                            </div>
-                        </div>
-
-                        <button id="swalFbContinue" style="width: 100%; padding: 12px; background: #1877f2; color: #fff; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; transition: 0.2s;">
-                            <i class="fa-brands fa-facebook-f"></i> Continue as Ishani
-                        </button>
+                    <div style="text-align: left; padding: 10px 0;">
+                        <p style="color: #94a3b8; font-size: 13.5px; margin-bottom: 16px;">Sign in securely using your Facebook account.</p>
+                        <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #e2e8f0;">Facebook Email or Profile Name:</label>
+                        <input type="text" id="swalFbInput" class="swal2-input" placeholder="e.g. John Doe or user@example.com" style="margin: 0 0 10px; width: 100%; box-sizing: border-box; background: #0f172a; border: 1px solid #334155; color: #fff; font-size: 14px;">
                     </div>
                 `,
                 background: '#1e293b',
                 color: '#fff',
-                showConfirmButton: false,
+                showConfirmButton: true,
+                confirmButtonText: '<i class="fa-brands fa-facebook-f"></i> Continue with Facebook',
+                confirmButtonColor: '#1877f2',
                 showCancelButton: true,
                 cancelButtonText: 'Cancel',
                 cancelButtonColor: '#475569',
-                didOpen: () => {
-                    const fbBtn = document.getElementById('swalFbContinue');
-                    if (fbBtn) {
-                        fbBtn.onclick = () => completeSocialAuth('Ishani Chathurika', 'ishani.chathurika@facebook.com', 'Facebook', remember);
+                preConfirm: () => {
+                    const input = document.getElementById('swalFbInput');
+                    const val = input ? input.value.trim() : '';
+                    if (!val) {
+                        Swal.showValidationMessage('Please enter your Facebook name or email');
+                        return false;
                     }
+                    return val;
+                }
+            }).then((res) => {
+                if (res.isConfirmed && res.value) {
+                    const inputVal = res.value;
+                    const email = inputVal.includes('@') ? inputVal : `${inputVal.replace(/\s+/g, '.').toLowerCase()}@facebook.com`;
+                    const name = inputVal.includes('@') ? inputVal.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : inputVal;
+                    completeSocialAuth(name, email, 'Facebook', remember);
                 }
             });
         });
 
-        // Common OAuth Complete Handler
-        function completeSocialAuth(fullName, email, provider, remember) {
-            Swal.fire({
-                title: 'Authenticating...',
+        title: 'Authenticating...',
                 html: `<div style="padding: 15px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: #38bdf8;"></i><p style="margin-top: 10px; color: #cbd5e1;">Signing in via ${provider} secure handshake...</p></div>`,
                 background: '#1e293b',
                 color: '#fff',

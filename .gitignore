@@ -37,3 +37,8 @@ generate_docx_report.py
 DOCUMENTATION_REPORT.md
 Mini_Project_Report_Guide.md
 Project_Report_Printable.html
+
+# Video recordings & demonstrations
+*.mp4
+*.avi
+*.mov
